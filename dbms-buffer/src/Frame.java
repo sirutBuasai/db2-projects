@@ -1,4 +1,9 @@
 public class Frame {
+  // Constant variables
+  private int RECORDSIZE = 40;
+  private int BLOCKSIZE = 4096;
+
+  // Class attributes
   private char[] content;
   private boolean dirty;
   private boolean pinned;
@@ -7,7 +12,7 @@ public class Frame {
   // Constructor ------------------------------------------
   public Frame(char[] content, boolean dirty, boolean pinned, int block_id) {
     // content size handling
-    if (content.length > 4096) {
+    if (content.length > BLOCKSIZE) {
       throw new java.lang.Error("Error: content length exceeds 4KB!");
     }
     else {
@@ -39,7 +44,7 @@ public class Frame {
   // Setters ----------------------------------------------
   public void setContent(char[] content) {
     // content size handling
-    if (content.length > 4096) {
+    if (content.length > BLOCKSIZE) {
       throw new java.lang.Error("Error: content length exceeds 4KB!");
     }
     else {
@@ -60,9 +65,24 @@ public class Frame {
   }
 
   // Other methods ----------------------------------------
-  public void print_content() {
-    for (int i = 0; i < this.content.length; i++) {
-      System.out.println(this.content[i]);
+
+  // Get the content of the record in the current block given a record number
+  // Argument: int record_num
+  // Return: char[] record
+  public char[] getRecord(int r_num) {
+    // initialize starting and ending content index for the given record
+    int start_idx = RECORDSIZE * (r_num-1);
+    int end_idx = RECORDSIZE * r_num;
+    // initialize variables for the return record
+    int j = 0;
+    char[] record = new char[RECORDSIZE];
+
+    // from start_idx to end_idx, copy the block content onto the returning record
+    for (int i = start_idx; i < end_idx; i++) {
+      record[j] = this.content[i];
+      j++;
     }
+
+    return record;
   }
 }
