@@ -4,7 +4,6 @@ public class Record {
 
   // Class attributes
   private char[] record_content;
-  private int record_num;
 
   // Constructor ------------------------------------------
   public Record(char[] record_content, int record_num) {
@@ -14,16 +13,11 @@ public class Record {
     }
 
     this.record_content = record_content;
-    this.record_num = record_num;
   }
 
   // Getters ----------------------------------------------
   public char[] getRecordContent() {
     return this.record_content;
-  }
-
-  public int getRecordNum() {
-    return this.record_num;
   }
 
   // Setters ----------------------------------------------
