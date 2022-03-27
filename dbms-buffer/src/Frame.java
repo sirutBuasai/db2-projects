@@ -15,13 +15,12 @@ public class Frame {
     if (content.length > BLOCKSIZE) {
       throw new java.lang.Error("Error: content length exceeds 4KB!");
     }
-    else {
-      // attribute initialization
-      this.content = content;
-      this.dirty = dirty;
-      this.pinned = pinned;
-      this.block_id = block_id;
-    }
+
+    // attribute initialization
+    this.content = content;
+    this.dirty = dirty;
+    this.pinned = pinned;
+    this.block_id = block_id;
   }
 
   // Getters ----------------------------------------------
@@ -47,9 +46,7 @@ public class Frame {
     if (content.length > BLOCKSIZE) {
       throw new java.lang.Error("Error: content length exceeds 4KB!");
     }
-    else {
-      this.content = content;
-    }
+    this.content = content;
   }
 
   public void setDirty(boolean dirty) {
@@ -84,5 +81,27 @@ public class Frame {
     }
 
     return record;
+  }
+
+  // Update the record to a new given content give na record number
+  // Argument: int record_num, char[] new_content
+  // Return: void
+  public void updateRecord(int r_num, char[] new_content) {
+    // content size handling
+    if (new_content.length != RECORDSIZE) {
+      throw new java.lang.Error("Error: given content is not 40 bytes!");
+    }
+
+    // initialize starting and ending content index for the given record
+    int start_idx = RECORDSIZE * (r_num-1);
+    int end_idx = RECORDSIZE * r_num;
+    // initialize variables for the new record
+    int j = 0;
+
+    // from start_idx to end_idx, copy the new content into the existing record
+    for (int i = start_idx; i < end_idx; i++) {
+      this.content[i] = new_content[j];
+      j++;
+    }
   }
 }

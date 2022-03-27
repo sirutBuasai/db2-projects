@@ -1,18 +1,31 @@
 class Main {
   public static void main(String[] args) {
-    char[] content = new char[80];
+    char[] block = new char[80];
     for (int i = 0; i < 80; i++) {
-      content[i] = (char) (i + '0');
+      block[i] = (char) (i + '0');
     }
     System.out.println("content");
-    printContent(content);
-    Frame f = new Frame(content, true, true, 4);
-    System.out.println("a");
-    char[] a = f.getRecord(1);
-    printContent(a);
-    System.out.println("b");
-    char[] b = f.getRecord(2);
-    printContent(b);
+    printContent(block);
+    Frame f = new Frame(block, true, true, 4);
+
+    System.out.println("record_1");
+    char[] r1 = f.getRecord(1);
+    printContent(r1);
+    System.out.println("record_2");
+    char[] r2 = f.getRecord(2);
+    printContent(r2);
+
+    System.out.println("----------------------------------------");
+    char[] new_content = new char[40];
+    for (int i = 0; i < 40; i++) {
+      new_content[i] = (char) (i + '0');
+    }
+    System.out.println("new_content");
+    printContent(new_content);
+    f.updateRecord(2, new_content);
+    char[] new_r2 = f.getRecord(2);
+    System.out.println("new record_2");
+    printContent(new_r2);
 
   }
   public static void printContent(char[] arr) {
