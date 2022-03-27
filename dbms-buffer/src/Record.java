@@ -10,7 +10,7 @@ public class Record {
   public Record(char[] record_content, int record_num) {
     // content size handling
     if (record_content.length != RECORDSIZE) {
-      throw new java.lang.Error("Error: record content exceeds 40 bytes!");
+      throw new java.lang.Error("Error: record content is not equal to 40 bytes!");
     }
 
     this.record_content = record_content;
