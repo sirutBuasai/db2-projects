@@ -1,4 +1,4 @@
-class Main {
+public class Main {
   public static void main(String[] args) {
     char[] block = new char[80];
     for (int i = 0; i < 80; i++) {

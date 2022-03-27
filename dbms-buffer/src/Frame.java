@@ -1,19 +1,18 @@
 public class Frame {
   // Constant variables
-  private int RECORDSIZE = 40;
-  private int BLOCKSIZE = 4096;
+  private int BLOCKSIZE = 100;
 
   // Class attributes
-  private char[] content;
+  private Record[] content;
   private boolean dirty;
   private boolean pinned;
   private int block_id;
 
   // Constructor ------------------------------------------
-  public Frame(char[] content, boolean dirty, boolean pinned, int block_id) {
+  public Frame(Record[] content, boolean dirty, boolean pinned, int block_id) {
     // content size handling
     if (content.length > BLOCKSIZE) {
-      throw new java.lang.Error("Error: content length exceeds 4KB!");
+      throw new java.lang.Error("Error: content length exceeds 100 records (4KB)!");
     }
 
     // attribute initialization
@@ -24,7 +23,7 @@ public class Frame {
   }
 
   // Getters ----------------------------------------------
-  public char[] getContent() {
+  public Record[] getContent() {
     return this.content;
   }
 
@@ -41,14 +40,6 @@ public class Frame {
   }
 
   // Setters ----------------------------------------------
-  public void setContent(char[] content) {
-    // content size handling
-    if (content.length > BLOCKSIZE) {
-      throw new java.lang.Error("Error: content length exceeds 4KB!");
-    }
-    this.content = content;
-  }
-
   public void setDirty(boolean dirty) {
     this.dirty = dirty;
   }
@@ -62,6 +53,15 @@ public class Frame {
   }
 
   // Other methods ----------------------------------------
+  // Initialize the frame block
+  public void initialize(int block_id) {
+    start_idx = RECORDSIZE * (block_id-1);
+    end_idx = RECORDSIZE * block_id;
+
+    for () {
+      Record rec = new Record(content, record_num)
+    }
+  }
 
   // Get the content of the record in the current block given a record number
   // Argument: int record_num
