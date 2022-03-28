@@ -67,24 +67,17 @@ public class Frame {
    *
    * Get the content of the record in the current block given a record number
    * Argument: int record_num
+   *           eg: record num is in the format of record num within the block
+   *               record 250 is the 50th record in block 3 as such record_num = 50
    * Return: char[] record
    */
   public char[] getRecord(int r_num) {
-    // initialize record index in the given block
-    System.out.println(this.block_id);
-    int start_idx = ((r_num-(NUMRECORD*(this.block_id-1)))-1) * RECORDSIZE;
-    int end_idx = start_idx + RECORDSIZE;
-    System.out.println(start_idx);
-    System.out.println(end_idx);
     // initialize resulting content
     char[] record_content = new char[RECORDSIZE];
-    int j = 0;
     // copy the current content onto the record
-    for (int i = start_idx; i < end_idx; i++) {
-      record_content[j] = this.content[i];
-      j++;
+    for (int i = 0; i < RECORDSIZE; i++) {
+      record_content[i] = this.content[i + (RECORDSIZE * (r_num-1))];
     }
-
     return record_content;
   }
 
@@ -92,17 +85,14 @@ public class Frame {
    * ------------------------------------------------------
    * Update the record to a new given content given a record number
    * Argument: int record_num, char[] new_content
+   *           eg: record num is in the format of record num within the block
+   *               record 250 is the 50th record in block 3 as such record_num = 50
    * Return: void
    */
   public void updateRecord(int r_num, char[] new_content) {
-    // initialize record index in the given block
-    int start_idx = ((r_num-(NUMRECORD*this.block_id-1))-1) * RECORDSIZE;
-    int end_idx = start_idx + RECORDSIZE;
-    int j = 0;
     // copy the new content onto the existing record
-    for (int i = start_idx; i < end_idx; i++) {
-      this.content[i] = new_content[j];
-      j++;
+    for (int i = 0; i < RECORDSIZE; i++) {
+      this.content[i + (RECORDSIZE * (r_num-1))] = new_content[i];
     }
     // update metadata for the dirty flag
     this.dirty = true;
