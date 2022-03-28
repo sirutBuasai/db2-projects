@@ -22,7 +22,11 @@ public class Main {
     bp.initialize(buffer_size);
     System.out.println("The program is ready for the next command");
     String command = scanner.nextLine();
-    readFile(command);
+
+    bp.bringBlock(Integer.parseInt(command));
+    String s = String.valueOf(bp.getBlockContent(Integer.parseInt(command)).getRecord(250));
+    System.out.println(s);
+
 
     // Clean up
     scanner.close();

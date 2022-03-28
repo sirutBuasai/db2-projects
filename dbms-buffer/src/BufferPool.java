@@ -6,7 +6,8 @@ import java.io.FileNotFoundException;
 public class BufferPool {
   // Class attributes
   private Frame[] buffers;
-  private int[] frame_bitmap;
+  private int[] bitmap;
+  // K: block_id, V: frame_num
   private HashMap<Integer, Integer> map = new HashMap<>();
 
   // Empty constructor
@@ -18,7 +19,7 @@ public class BufferPool {
   public void initialize(int buffer_size) {
     // initialize the buffer array
     this.buffers = new Frame[buffer_size];
-    this.frame_bitmap = new int[buffer_size];
+    this.bitmap = new int[buffer_size];
     // populate the buffer array with frames
     for (int i = 0; i < buffer_size; i++) {
       Frame f = new Frame();
@@ -52,8 +53,8 @@ public class BufferPool {
    */
   public int searchFreeFrame() {
     // iterate through the bitmap to find the first 0
-    for (int i = 0; i < this.frame_bitmap.length; i++) {
-      if (this.frame_bitmap[i] == 0) {
+    for (int i = 0; i < this.bitmap.length; i++) {
+      if (this.bitmap[i] == 0) {
         return i;
       }
     }
@@ -70,12 +71,24 @@ public class BufferPool {
   public int bringBlock(int block_id) {
     // get the block content and store it in outpit variable
     String file_name = "F" + String.valueOf(block_id) + ".txt";
-    String output = this.readFile(file_name);
+    char[] output = this.readFile(file_name).toCharArray();
 
     // find a free frame
     int frame_num = this.searchFreeFrame();
     // copy the block content to the frame if found
-    this.buffers[frame_num].
+    if (frame_num >= 0) {
+      this.buffers[frame_num].setContent(output);
+      System.out.println(block_id);
+      this.buffers[frame_num].setBlockId(block_id);
+      // update metadata
+      this.map.put(block_id, frame_num);
+      this.bitmap[frame_num] = 1;
+      return 1;
+    }
+    // frame is not found, return 0
+    else {
+      return 0;
+    }
 
   }
 
@@ -85,17 +98,16 @@ public class BufferPool {
    * Argument: int block_id
    * Return: Record[] block_content
    */
-  public Record[] getBlockContent(int block_id) {
+  public Frame getBlockContent(int block_id) {
     // search if the block exists in the buffer pool first
-    Integer frame_num = this.searchBlock(block_id);
+    int frame_num = this.searchBlock(block_id);
     // if the block is in the buffer pool, get the content
-    if (frame_num > 0) {
-      Record[] block_content = this.buffers[frame_num].getContent();
-      return block_content;
+    if (frame_num >= 0) {
+      return this.buffers[frame_num];
     }
     // if the block is not in the buffer pool, put block into frame
     else {
-      return new Record[] {};
+      return new Frame();
     }
   }
 
@@ -108,7 +120,7 @@ public class BufferPool {
     String data = new String();
     try {
       // initialize file and scanner class
-      File file = new File("./Project1/"+file_name+".txt");
+      File file = new File("./Project1/"+file_name);
       Scanner file_reader = new Scanner(file);
       // keep reading file until the end of the file
       while (file_reader.hasNextLine()) {

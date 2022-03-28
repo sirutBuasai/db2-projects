@@ -71,8 +71,11 @@ public class Frame {
    */
   public char[] getRecord(int r_num) {
     // initialize record index in the given block
-    int start_idx = ((r_num-(NUMRECORD*this.block_id-1))-1) * RECORDSIZE;
+    System.out.println(this.block_id);
+    int start_idx = ((r_num-(NUMRECORD*(this.block_id-1)))-1) * RECORDSIZE;
     int end_idx = start_idx + RECORDSIZE;
+    System.out.println(start_idx);
+    System.out.println(end_idx);
     // initialize resulting content
     char[] record_content = new char[RECORDSIZE];
     int j = 0;
