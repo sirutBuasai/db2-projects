@@ -78,7 +78,6 @@ public class BufferPool {
     // copy the block content to the frame if found
     if (frame_num >= 0) {
       this.buffers[frame_num].setContent(output);
-      System.out.println(block_id);
       this.buffers[frame_num].setBlockId(block_id);
       // update metadata
       this.map.put(block_id, frame_num);
