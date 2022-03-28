@@ -1,7 +1,11 @@
+import java.util.*;
+
 public class Main {
   public static void main(String[] args) {
-    // initialize buffer size
+    // initialize global variables
     int buffer_size = 0;
+    Scanner scanner = new Scanner(System.in);
+
     // argument handling
     switch (args.length) {
       case 1:
@@ -12,9 +16,21 @@ public class Main {
         printHelp();
         break;
     }
+
     // initialize the buffer pool
     BufferPool bp = new BufferPool();
     bp.initialize(buffer_size);
+    System.out.println("The program is ready for the next command");
+    String command = scanner.nextLine();
+    System.out.println(command);
+    String command2 = scanner.nextLine();
+    System.out.println(command2);
+    String command3 = scanner.nextLine();
+    System.out.println(command3);
+
+
+    // Clean up
+    scanner.close();
   }
 
   /*
