@@ -1,9 +1,11 @@
 public class Frame {
   // Constant variables
-  private int BLOCKSIZE = 100;
+  private int BLOCKSIZE = 4096;
+  private int RECORDSIZE = 40;
+  private int NUMRECORD = 100;
 
   // Class attributes
-  private Record[] content;
+  private char[] content;
   private boolean dirty;
   private boolean pinned;
   private int block_id;
@@ -16,7 +18,7 @@ public class Frame {
    */
   public void initialize() {
     // attribute initialization
-    this.content = new Record[BLOCKSIZE] ;
+    this.content = new char[BLOCKSIZE] ;
     this.dirty = false;
     this.pinned = false;
     this.block_id = -1;
@@ -25,7 +27,7 @@ public class Frame {
   /*
    * Getters ----------------------------------------------
    */
-  public Record[] getContent() {
+  public char[] getContent() {
     return this.content;
   }
 
@@ -44,7 +46,7 @@ public class Frame {
   /*
    * Setters ----------------------------------------------
    */
-  public void setContent(Record[] content) {
+  public void setContent(char[] content) {
     this.content = content;
   }
 
@@ -67,10 +69,20 @@ public class Frame {
    * Argument: int record_num
    * Return: char[] record
    */
-  public Record getRecord(int r_num) {
+  public char[] getRecord(int r_num) {
     // initialize record index in the given block
-    int r_idx = (r_num - (100*(this.block_id-1)))-1;
-    return this.content[r_idx];
+    int start_idx = ((r_num-(NUMRECORD*this.block_id-1))-1) * RECORDSIZE;
+    int end_idx = start_idx + RECORDSIZE;
+    // initialize resulting content
+    char[] record_content = new char[RECORDSIZE];
+    int j = 0;
+    // copy the current content onto the record
+    for (int i = start_idx; i < end_idx; i++) {
+      record_content[j] = this.content[i];
+      j++;
+    }
+
+    return record_content;
   }
 
   /*
@@ -81,7 +93,15 @@ public class Frame {
    */
   public void updateRecord(int r_num, char[] new_content) {
     // initialize record index in the given block
-    int r_idx = (r_num - (100*(this.block_id-1)))-1;
-    this.content[r_idx].setRecordContent(new_content);
+    int start_idx = ((r_num-(NUMRECORD*this.block_id-1))-1) * RECORDSIZE;
+    int end_idx = start_idx + RECORDSIZE;
+    int j = 0;
+    // copy the new content onto the existing record
+    for (int i = start_idx; i < end_idx; i++) {
+      this.content[i] = new_content[j];
+      j++;
+    }
+    // update metadata for the dirty flag
+    this.dirty = true;
   }
 }

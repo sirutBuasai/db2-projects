@@ -1,4 +1,7 @@
 import java.util.HashMap;
+import java.util.Scanner;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 public class BufferPool {
   // Class attributes
@@ -60,14 +63,35 @@ public class BufferPool {
 
   /*
    * ------------------------------------------------------
+   * Being block into frame
+   * Argument: int block_id
+   * Return: int 1 if succeed, 0 if not
+   */
+  public int bringBlock(int block_id) {
+    // get the block content and store it in outpit variable
+    String file_name = "F" + String.valueOf(block_id) + ".txt";
+    String output = this.readFile(file_name);
+
+    // find a free frame
+    int frame_num = this.searchFreeFrame();
+    // copy the block content to the frame if found
+    this.buffers[frame_num].
+
+  }
+
+  /*
+   * ------------------------------------------------------
    * Get a content of the block
+   * Argument: int block_id
+   * Return: Record[] block_content
    */
   public Record[] getBlockContent(int block_id) {
     // search if the block exists in the buffer pool first
     Integer frame_num = this.searchBlock(block_id);
     // if the block is in the buffer pool, get the content
     if (frame_num > 0) {
-      return this.buffers[frame_num].getContent();
+      Record[] block_content = this.buffers[frame_num].getContent();
+      return block_content;
     }
     // if the block is not in the buffer pool, put block into frame
     else {
@@ -75,4 +99,30 @@ public class BufferPool {
     }
   }
 
+  /*
+   * ------------------------------------------------------
+   * Read file function
+   */
+  public String readFile(String file_name) {
+    // initialize return data
+    String data = new String();
+    try {
+      // initialize file and scanner class
+      File file = new File("./Project1/"+file_name+".txt");
+      Scanner file_reader = new Scanner(file);
+      // keep reading file until the end of the file
+      while (file_reader.hasNextLine()) {
+        // print out line by line
+        data += file_reader.nextLine();
+      }
+      // close file reader
+      file_reader.close();
+    }
+    catch (FileNotFoundException e) {
+      System.err.println("Error: Cannot find or open file");
+      e.printStackTrace();
+    }
+
+    return data;
+  }
 }
