@@ -1,6 +1,7 @@
 import java.util.HashMap;
 import java.util.Scanner;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.FileNotFoundException;
 
 public class BufferPool {
@@ -46,20 +47,18 @@ public class BufferPool {
     int frame_num = this.searchBlock(block_id);
     // if a frame is found, print out the content of the record
     if (frame_num >= 0) {
-      char[] record_content = this.buffers[frame_num].getRecord(r_num);
-      String output = String.valueOf(record_content);
-      System.out.println(output);
+      String record_content = String.valueOf(this.buffers[frame_num].getRecord(r_num));
+      System.out.println(record_content);
     }
     // if a frame is not found, check if we can bring the block into memory
     else {
       int free_frame = this.searchFreeFrame();
       // if there is a free frame, bring block to memory
       if (free_frame >= 0) {
-        this.bringBlock(block_id, free_frame);
+        this.bringBlock(block_id);
         // afterwards, read out the record content
-        char[] record_content = this.buffers[free_frame].getRecord(r_num);
-        String output = String.valueOf(record_content);
-        System.out.println(output);
+      String record_content = String.valueOf(this.buffers[free_frame].getRecord(r_num));
+      System.out.println(record_content);
       }
       // if there is not free frame, notify the user
       else {
@@ -75,7 +74,7 @@ public class BufferPool {
    * Return: int block_id
    */
   public int calcBlockId(int rr_num) {
-    return Math.floorDiv(rr_num-1, 100) + 1;
+    return Math.floorDiv(rr_num-1, NUMRECORD) + 1;
   }
 
   /*
@@ -120,7 +119,57 @@ public class BufferPool {
       }
     }
     // if none of the frames are free, return -1
+    return this.removableFrame();
+  }
+
+  /*
+   * ------------------------------------------------------
+   * Search for the first removable frame
+   * Argument: void
+   * Return: int frame_num, -1 if no frame can be removed
+   */
+  public int removableFrame() {
+    // iterate through the buffer array and check for the first frame to be removed
+    for (int i = 0; i < this.buffers.length; i++) {
+      // if the frame is pinned, skip it, otherwise, check for dirty bit
+      if (!this.buffers[i].getPinned()) {
+        // if the frame is dirty, write before removing the frame
+        if (this.buffers[i].getDirty()) {
+          this.writeToBlock(this.buffers[i]);
+        }
+        return i;
+      }
+    }
+    // if none of the frames can be free, return -1
     return -1;
+  }
+
+  /*
+   * ------------------------------------------------------
+   * Write the content of the given frame to the block
+   * Argument: Frame f
+   * Return: void
+   */
+  public void writeToBlock(Frame f) {
+    // initialize the new content in the memory
+    String data = String.valueOf(f.getContent());
+    try {
+      // initialize file and file writer class
+      File file = new File(".Project1/F"+String.valueOf(f.getBlockId())+".txt");
+      FileWriter file_writer = new FileWriter(file, false);
+      // write the new content onto disk
+      file_writer.write(data);
+      // close file writer
+      file_writer.close();
+    }
+    catch (Exception e) {
+      System.err.println("Error: Cannot find or open file");
+      e.printStackTrace();
+    }
+    // reset all the metadata
+    f.setDirty(false);
+    f.setPinned(false);
+    f.setBlockId(-1);
   }
 
   /*
@@ -129,35 +178,17 @@ public class BufferPool {
    * Argument: int block_id, int free_frame
    * Return: int 1 if succeed, 0 if not
    */
-  public void bringBlock(int block_id, int free_frame) {
-    // get the block content and store it in outpit variable
-    String file_name = "F" + String.valueOf(block_id) + ".txt";
-    char[] output = this.readFile(file_name).toCharArray();
-
-    // find a free frame
-    this.buffers[free_frame].setContent(output);
-    this.buffers[free_frame].setBlockId(block_id);
-    // update metadata
-    this.map.put(block_id, free_frame);
-    this.bitmap[free_frame] = 1;
-  }
-
-  /*
-   * ------------------------------------------------------
-   * Get a content of the block
-   * Argument: int block_id
-   * Return: Record[] block_content
-   */
-  public Frame getBlock(int block_id) {
-    // search if the block exists in the buffer pool first
-    int frame_num = this.searchBlock(block_id);
-    // if the block is in the buffer pool, get the frame containing the block
-    if (frame_num >= 0) {
-      return this.buffers[frame_num];
-    }
-    // if the block is not in the buffer pool, put block into frame
-    else {
-      return new Frame();
+  public void bringBlock(int block_id) {
+    int free_frame = this.searchFreeFrame();
+    if (free_frame >= 0) {
+      // read the block content and bring to memory
+      String file_name = "F" + String.valueOf(block_id) + ".txt";
+      char[] output = this.readFile(file_name).toCharArray();
+      this.buffers[free_frame].setContent(output);
+      // update metadata
+      this.buffers[free_frame].setBlockId(block_id);
+      this.map.put(block_id, free_frame);
+      this.bitmap[free_frame] = 1;
     }
   }
 
@@ -185,5 +216,24 @@ public class BufferPool {
       e.printStackTrace();
     }
     return data;
+  }
+  // ###############################################################################3
+  /*
+   * ------------------------------------------------------
+   * Get a content of the block
+   * Argument: int block_id
+   * Return: Record[] block_content
+   */
+  public Frame getBlock(int block_id) {
+    // search if the block exists in the buffer pool first
+    int frame_num = this.searchBlock(block_id);
+    // if the block is in the buffer pool, get the frame containing the block
+    if (frame_num >= 0) {
+      return this.buffers[frame_num];
+    }
+    // if the block is not in the buffer pool, put block into frame
+    else {
+      return new Frame();
+    }
   }
 }

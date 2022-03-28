@@ -2,7 +2,6 @@ public class Frame {
   // Constant variables
   private int BLOCKSIZE = 4096;
   private int RECORDSIZE = 40;
-  private int NUMRECORD = 100;
 
   // Class attributes
   private char[] content;
