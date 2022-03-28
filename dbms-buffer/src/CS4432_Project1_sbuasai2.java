@@ -24,16 +24,17 @@ public class CS4432_Project1_sbuasai2 {
     int block_id;
     char[] record_content;
     boolean active = true;
+    System.out.println("The program is ready for the next command");
 
     while(active){
       // prompts for user commands
-      System.out.println("The program is ready for the next command");
+      System.out.print("> ");
       // parse input
       String input = scanner.nextLine();
       String[] command = input.split("\\s+");
 
       // parse commands
-      switch(command[0]){
+      switch(command[0].toUpperCase()){
         case "GET":
           // get the record content given a record number
           rr_num = Integer.parseInt(command[1]);
@@ -44,19 +45,19 @@ public class CS4432_Project1_sbuasai2 {
           // set the record content to the new content given a recrd number
           rr_num = Integer.parseInt(command[1]);
           record_content = command[2].toCharArray();
-          bp.set(rr_num, record_content);
+          // bp.set(rr_num, record_content);
           break;
 
         case "PIN":
           // pin the frame given a block id
           block_id = Integer.parseInt(command[1]);
-          bp.pin(block_id);
+          // bp.pin(block_id);
           break;
 
         case "UNPIN":
           // unpin the frame given a block id
           block_id = Integer.parseInt(command[1]);
-          bp.unpin(block_id);
+          // bp.unpin(block_id);
           break;
 
         case "HELP":
@@ -68,6 +69,7 @@ public class CS4432_Project1_sbuasai2 {
           break;
 
         default:
+          System.err.println("Program does not recognize the command.");
           printHelp();
           break;
       }
@@ -83,11 +85,11 @@ public class CS4432_Project1_sbuasai2 {
    */
   public static void printHelp() {
     System.err.println("List of commands:");
-    System.err.println("GET <recordID>");
-    System.err.println("SET <recordID> <40 byte string>");
-    System.err.println("PIN <blockID>");
-    System.err.println("UNPIN <blockID>");
-    System.err.println("HELP");
-    System.err.println("EXIT");
+    System.err.println("                GET <record_num>");
+    System.err.println("                SET <record_num> <40 byte string>");
+    System.err.println("                PIN <block_id>");
+    System.err.println("                UNPIN <block_id>");
+    System.err.println("                HELP");
+    System.err.println("                EXIT");
   }
 }

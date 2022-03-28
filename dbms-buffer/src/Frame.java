@@ -71,11 +71,12 @@ public class Frame {
    * Return: char[] record
    */
   public char[] getRecord(int r_num) {
-    // initialize resulting content
+    // initialize resulting content and record index
+    int j = RECORDSIZE * (r_num-1);
     char[] record_content = new char[RECORDSIZE];
     // copy the current content onto the record
     for (int i = 0; i < RECORDSIZE; i++) {
-      record_content[i] = this.content[i + (RECORDSIZE * (r_num-1))];
+      record_content[i] = this.content[i+j];
     }
     return record_content;
   }
@@ -89,9 +90,11 @@ public class Frame {
    * Return: void
    */
   public void updateRecord(int r_num, char[] new_content) {
+    // initialize the record index
+    int j = RECORDSIZE * (r_num-1);
     // copy the new content onto the existing record
     for (int i = 0; i < RECORDSIZE; i++) {
-      this.content[i + (RECORDSIZE * (r_num-1))] = new_content[i];
+      this.content[i+j] = new_content[i];
     }
     // update metadata for the dirty flag
     this.dirty = true;

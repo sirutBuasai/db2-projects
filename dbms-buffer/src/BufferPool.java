@@ -33,43 +33,42 @@ public class BufferPool {
 
   /*
    * Main methods (get,set,pin,unpin) ---------------------
-   *
    * Get a record from a block if it exists in a pool and from disk otherwise
    * Argument: int rr_num
-   *           record number is in the raw format of 1,..,100,..,n
    * Return: char[] record_content
    */
   public void get(int rr_num) {
     // process block id and record number
     int block_id = this.calcBlockId(rr_num);
     int r_num = this.calcRecordNum(rr_num);
-    // check if the block exists in the buffer pool
+    // check if the block exists in the buffer pool, and bring to pool if does not exist
     int frame_num = this.searchBlock(block_id);
-    // if a frame is found, print out the content of the record
+    // if a block is found or successfully brought to buffer, print content
     if (frame_num >= 0) {
+      // output the content of the given record
       String record_content = String.valueOf(this.buffers[frame_num].getRecord(r_num));
       System.out.println(record_content);
     }
-    // if a frame is not found, check if we can bring the block into memory
+    // if block cannot be brought to buffer, notify the user
     else {
-      int free_frame = this.searchFreeFrame();
-      // if there is a free frame, bring block to memory
-      if (free_frame >= 0) {
-        this.bringBlock(block_id);
-        // afterwards, read out the record content
-      String record_content = String.valueOf(this.buffers[free_frame].getRecord(r_num));
-      System.out.println(record_content);
-      }
-      // if there is not free frame, notify the user
-      else {
-        System.out.println("There currently is no free frame");
-      }
+      System.out.println("There currently is no free frame.");
     }
+  }
+
+  /*
+   * ------------------------------------------------------
+   * Set a record content to the given new content
+   * Argument: int rr_num, char[] new_content
+   * Return: void
+   */
+  public void set(int rr_num, new_content) {
+    //
   }
 
   /*
    * Other methods ----------------------------------------
    * Conversion from raw record number to block number
+   * Eg: raw number of 250 is a block number 3
    * Argument: int rr_num
    * Return: int block_id
    */
@@ -80,6 +79,7 @@ public class BufferPool {
   /*
    * ------------------------------------------------------
    * Conversion from raw record number to normal record number
+   * Eg: raw number of 250 is a normal number of 49th indexed record on the third block
    * Argument: int rr_num
    * Return: int r_num
    */
@@ -90,9 +90,10 @@ public class BufferPool {
   }
 
   /* ------------------------------------------------------
-   * Search if a block is available in the buffer pool
+   * Search if a block is already in the buffer pool
+   * if a block is not in the buffer, bring it to buffer
    * Argument: int block_id
-   * Return: int frame_num if block is in buffer, -1 otherwise
+   * Return: int frame_num if successful, -1 otherwise
    */
   public int searchBlock(int block_id) {
     // search for the block within the hash map
@@ -101,7 +102,7 @@ public class BufferPool {
       return frame_num;
     }
     else {
-      return -1;
+      return this.bringBlock(block_id);
     }
   }
 
@@ -161,24 +162,24 @@ public class BufferPool {
       file_writer.write(data);
       // close file writer
       file_writer.close();
+    // reset all the metadata
+    f.setDirty(false);
+    f.setPinned(false);
+    f.setBlockId(-1);
     }
     catch (Exception e) {
       System.err.println("Error: Cannot find or open file");
       e.printStackTrace();
     }
-    // reset all the metadata
-    f.setDirty(false);
-    f.setPinned(false);
-    f.setBlockId(-1);
   }
 
   /*
    * ------------------------------------------------------
    * Bring block into the specified
-   * Argument: int block_id, int free_frame
-   * Return: int 1 if succeed, 0 if not
+   * Argument: int block_id
+   * Return: int free_frame if succeed, -1 if not
    */
-  public void bringBlock(int block_id) {
+  public int bringBlock(int block_id) {
     int free_frame = this.searchFreeFrame();
     if (free_frame >= 0) {
       // read the block content and bring to memory
@@ -189,12 +190,18 @@ public class BufferPool {
       this.buffers[free_frame].setBlockId(block_id);
       this.map.put(block_id, free_frame);
       this.bitmap[free_frame] = 1;
+      return free_frame;
+    }
+    else {
+      return -1;
     }
   }
 
   /*
    * ------------------------------------------------------
    * Read file function
+   * Argument: String file_name
+   * Return: String data (content of the file)
    */
   public String readFile(String file_name) {
     // initialize return data
@@ -216,24 +223,5 @@ public class BufferPool {
       e.printStackTrace();
     }
     return data;
-  }
-  // ###############################################################################3
-  /*
-   * ------------------------------------------------------
-   * Get a content of the block
-   * Argument: int block_id
-   * Return: Record[] block_content
-   */
-  public Frame getBlock(int block_id) {
-    // search if the block exists in the buffer pool first
-    int frame_num = this.searchBlock(block_id);
-    // if the block is in the buffer pool, get the frame containing the block
-    if (frame_num >= 0) {
-      return this.buffers[frame_num];
-    }
-    // if the block is not in the buffer pool, put block into frame
-    else {
-      return new Frame();
-    }
   }
 }
