@@ -5,7 +5,9 @@ public class Record {
   // Class attributes
   private char[] record_content;
 
-  // Constructor ------------------------------------------
+  /*
+   * Constructor ------------------------------------------
+   */
   public Record(char[] record_content, int record_num) {
     // content size handling
     if (record_content.length != RECORDSIZE) {
@@ -15,13 +17,17 @@ public class Record {
     this.record_content = record_content;
   }
 
-  // Getters ----------------------------------------------
+  /*
+   * Getters ----------------------------------------------
+   */
   public char[] getRecordContent() {
     return this.record_content;
   }
 
-  // Setters ----------------------------------------------
-  public void setContent(char[] new_content) {
+  /*
+   * Setters ----------------------------------------------
+   */
+  public void setRecordContent(char[] new_content) {
     // content size handling
     if (new_content.length != RECORDSIZE) {
       throw new java.lang.Error("Error: new record content exceeds 40 bytes!");
