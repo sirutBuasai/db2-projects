@@ -7,8 +7,7 @@ public class BufferPool {
   // Class attributes
   private Frame[] buffers;
   private int[] bitmap;
-  // K: block_id, V: frame_num
-  private HashMap<Integer, Integer> map = new HashMap<>();
+  private HashMap<Integer, Integer> map = new HashMap<>();   // K: block_id, V: frame_num
 
   // Empty constructor
   public BufferPool() {}
@@ -27,6 +26,11 @@ public class BufferPool {
       this.buffers[i] = f;
     }
   }
+
+  /*
+   * Main methods -----------------------------------------
+   *
+   */
 
   /*
    * Other methods ----------------------------------------
@@ -88,7 +92,6 @@ public class BufferPool {
     else {
       return 0;
     }
-
   }
 
   /*
@@ -97,10 +100,10 @@ public class BufferPool {
    * Argument: int block_id
    * Return: Record[] block_content
    */
-  public Frame getBlockContent(int block_id) {
+  public Frame getBlock(int block_id) {
     // search if the block exists in the buffer pool first
     int frame_num = this.searchBlock(block_id);
-    // if the block is in the buffer pool, get the content
+    // if the block is in the buffer pool, get the frame containing the block
     if (frame_num >= 0) {
       return this.buffers[frame_num];
     }
@@ -133,7 +136,6 @@ public class BufferPool {
       System.err.println("Error: Cannot find or open file");
       e.printStackTrace();
     }
-
     return data;
   }
 }

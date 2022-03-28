@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class Main {
+public class CS4432_Project1_sbuasai2 {
   public static void main(String[] args) {
     // initialize global variables
     int buffer_size = 0;
@@ -20,13 +20,36 @@ public class Main {
     // initialize the buffer pool
     BufferPool bp = new BufferPool();
     bp.initialize(buffer_size);
+    // prompts for user commands
     System.out.println("The program is ready for the next command");
-    String command = scanner.nextLine();
+    String input = scanner.nextLine();
+    String[] command = input.split("\\s+");
 
-    bp.bringBlock(Integer.parseInt(command));
-    String s = String.valueOf(bp.getBlockContent(Integer.parseInt(command)).getRecord(250));
-    System.out.println(s);
+    switch (command[0]) {
+      case "GET":
+        System.out.println("MODE GET");
+        System.out.println(command[1]);
+        break;
 
+      case "SET":
+        System.out.println("MODE SET");
+        System.out.println(command[1]);
+        break;
+
+      case "PIN":
+        System.out.println("MODE PIN");
+        System.out.println(command[1]);
+        break;
+
+      case "UNPIN":
+        System.out.println("MODE UNPIN");
+        System.out.println(command[1]);
+        break;
+
+      default:
+        printHelp();
+        break;
+    }
 
     // Clean up
     scanner.close();
@@ -40,5 +63,4 @@ public class Main {
     System.err.println("Help message.");
     System.exit(1);
   }
-
 }
