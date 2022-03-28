@@ -53,7 +53,6 @@ public class BufferPool {
     // if a frame is not found, check if we can bring the block into memory
     else {
       int free_frame = this.searchFreeFrame();
-      System.out.println(free_frame);
       // if there is a free frame, bring block to memory
       if (free_frame >= 0) {
         this.bringBlock(block_id, free_frame);
@@ -68,7 +67,7 @@ public class BufferPool {
       }
     }
   }
- 
+
   /*
    * Other methods ----------------------------------------
    * Conversion from raw record number to block number
@@ -76,7 +75,7 @@ public class BufferPool {
    * Return: int block_id
    */
   public int calcBlockId(int rr_num) {
-    return Math.floorDiv(rr_num, 100) + 1;
+    return Math.floorDiv(rr_num-1, 100) + 1;
   }
 
   /*
@@ -86,10 +85,11 @@ public class BufferPool {
    * Return: int r_num
    */
   public int calcRecordNum(int rr_num) {
-    int ones = Math.floorDiv(rr_num, 1)%10;
-    int tens = Math.floorDiv(rr_num, 10)%10;
-    return (tens*10)+ones;
+    int ones = Math.floorDiv(rr_num-1, 1)%10;
+    int tens = Math.floorDiv(rr_num-1, 10)%10;
+    return (tens*10)+ones+1;
   }
+
   /* ------------------------------------------------------
    * Search if a block is available in the buffer pool
    * Argument: int block_id
