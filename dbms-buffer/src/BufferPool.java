@@ -41,15 +41,44 @@ public class BufferPool {
     // process block id and record number
     int block_id = this.calcBlockId(rr_num);
     int r_num = this.calcRecordNum(rr_num);
-    // check if the block exists in the buffer pool, and bring to pool if does not exist
+    // check if the block exists in the buffer pool
     int frame_num = this.searchBlock(block_id);
-    // if a block is found or successfully brought to buffer, print content
+    // if a block is found.
     if (frame_num >= 0) {
       // output the content of the given record
       String record_content = String.valueOf(this.buffers[frame_num].getRecord(r_num));
-      System.out.println(record_content);
+      System.out.println(record_content + "; File" + block_id + " is already in memory; Located in frame " + frame_num);
     }
-    // if block cannot be brought to buffer, notify the user
+    else {
+      // if block is brought into memory
+      frame_num = this.bringBlock(block_id);
+      if (frame_num >= 0) {
+        // output the content of the given record
+        String record_content = String.valueOf(this.buffers[frame_num].getRecord(r_num));
+        System.out.println(record_content + "; Brought file " + block_id + " from disk; Placed in frame " + frame_num);
+
+      }
+      System.out.println("The corresponding block #" + block_id + "cannot be accessed from disk because the memory buffers are full");
+    }
+  }
+
+  /*
+   * ------------------------------------------------------
+   * Set a record content to the given new content
+   * Argument: int rr_num, char[] new_content
+   * Return: void
+   */
+  public void set(int rr_num, char[] new_content) {
+    // process block id and record number
+    int block_id = this.calcBlockId(rr_num);
+    int r_num = this.calcRecordNum(rr_num);
+    // check if the block exists in the buffer pool, and bring to pool if does not exist
+    int frame_num = this.searchBlock(block_id);
+    // if a block is found or successfully brought to buffer, update the content
+    if (frame_num >= 0) {
+      this.buffers[frame_num].updateRecord(r_num, new_content);
+      System.out.println("Write was successful");
+    }
     else {
       System.out.println("There currently is no free frame.");
     }
@@ -61,7 +90,7 @@ public class BufferPool {
    * Argument: int rr_num, char[] new_content
    * Return: void
    */
-  public void set(int rr_num, char[] new_content) {
+  public void pin(int rr_num, char[] new_content) {
     // process block id and record number
     int block_id = this.calcBlockId(rr_num);
     int r_num = this.calcRecordNum(rr_num);
@@ -103,7 +132,6 @@ public class BufferPool {
 
   /* ------------------------------------------------------
    * Search if a block is already in the buffer pool
-   * if a block is not in the buffer, bring it to buffer
    * Argument: int block_id
    * Return: int frame_num if successful, -1 otherwise
    */
@@ -114,7 +142,31 @@ public class BufferPool {
       return frame_num;
     }
     else {
-      return this.bringBlock(block_id);
+      return -1;
+    }
+  }
+
+  /*
+   * ------------------------------------------------------
+   * Bring block into the specified
+   * Argument: int block_id
+   * Return: int free_frame if succeed, -1 if not
+   */
+  public int bringBlock(int block_id) {
+    int free_frame = this.searchFreeFrame();
+    if (free_frame >= 0) {
+      // read the block content and bring to memory
+      String file_name = "F" + String.valueOf(block_id) + ".txt";
+      char[] output = this.readFile(file_name).toCharArray();
+      this.buffers[free_frame].setContent(output);
+      // update metadata
+      this.buffers[free_frame].setBlockId(block_id);
+      this.map.put(block_id, free_frame);
+      this.bitmap[free_frame] = 1;
+      return free_frame;
+    }
+    else {
+      return -1;
     }
   }
 
@@ -148,7 +200,7 @@ public class BufferPool {
       if (!this.buffers[i].getPinned()) {
         // if the frame is dirty, write before removing the frame
         if (this.buffers[i].getDirty()) {
-          this.writeToBlock(this.buffers[i]);
+          this.writeToBlock(i);
         }
         return i;
       }
@@ -160,52 +212,28 @@ public class BufferPool {
   /*
    * ------------------------------------------------------
    * Write the content of the given frame to the block
-   * Argument: Frame f
+   * Argument: int frame_idx
    * Return: void
    */
-  public void writeToBlock(Frame f) {
+  public void writeToBlock(int frame_idx) {
     // initialize the new content in the memory
-    String data = String.valueOf(f.getContent());
+    String data = String.valueOf(this.buffers[frame_idx].getContent());
     try {
       // initialize file and file writer class
-      File file = new File(".Project1/F"+String.valueOf(f.getBlockId())+".txt");
+      File file = new File(".Project1/F"+String.valueOf(this.buffers[frame_idx].getBlockId())+".txt");
       FileWriter file_writer = new FileWriter(file, false);
       // write the new content onto disk
       file_writer.write(data);
       // close file writer
       file_writer.close();
     // reset all the metadata
-    f.setDirty(false);
-    f.setPinned(false);
-    f.setBlockId(-1);
+    this.buffers[frame_idx].setDirty(false);
+    this.buffers[frame_idx].setPinned(false);
+    this.buffers[frame_idx].setBlockId(-1);
     }
     catch (Exception e) {
       System.err.println("Error: Cannot find or open file");
       e.printStackTrace();
-    }
-  }
-
-  /*
-   * ------------------------------------------------------
-   * Bring block into the specified
-   * Argument: int block_id
-   * Return: int free_frame if succeed, -1 if not
-   */
-  public int bringBlock(int block_id) {
-    int free_frame = this.searchFreeFrame();
-    if (free_frame >= 0) {
-      // read the block content and bring to memory
-      String file_name = "F" + String.valueOf(block_id) + ".txt";
-      char[] output = this.readFile(file_name).toCharArray();
-      this.buffers[free_frame].setContent(output);
-      // update metadata
-      this.buffers[free_frame].setBlockId(block_id);
-      this.map.put(block_id, free_frame);
-      this.bitmap[free_frame] = 1;
-      return free_frame;
-    }
-    else {
-      return -1;
     }
   }
 
