@@ -61,8 +61,20 @@ public class BufferPool {
    * Argument: int rr_num, char[] new_content
    * Return: void
    */
-  public void set(int rr_num, new_content) {
-    //
+  public void set(int rr_num, char[] new_content) {
+    // process block id and record number
+    int block_id = this.calcBlockId(rr_num);
+    int r_num = this.calcRecordNum(rr_num);
+    // check if the block exists in the buffer pool, and bring to pool if does not exist
+    int frame_num = this.searchBlock(block_id);
+    // if a block is found or successfully brought to buffer, update the content
+    if (frame_num >= 0) {
+      this.buffers[frame_num].updateRecord(r_num, new_content);
+      System.out.println("Write was successful");
+    }
+    else {
+      System.out.println("There currently is no free frame.");
+    }
   }
 
   /*

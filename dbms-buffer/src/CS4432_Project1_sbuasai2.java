@@ -44,8 +44,8 @@ public class CS4432_Project1_sbuasai2 {
         case "SET":
           // set the record content to the new content given a recrd number
           rr_num = Integer.parseInt(command[1]);
-          record_content = command[2].toCharArray();
-          // bp.set(rr_num, record_content);
+          record_content = combineString(command, 2);
+          bp.set(rr_num, record_content);
           break;
 
         case "PIN":
@@ -82,6 +82,8 @@ public class CS4432_Project1_sbuasai2 {
   /*
    * ------------------------------------------------------
    * General help function
+   * Argument: void
+   * Return: void
    */
   public static void printHelp() {
     System.err.println("List of commands:");
@@ -91,5 +93,24 @@ public class CS4432_Project1_sbuasai2 {
     System.err.println("                UNPIN <block_id>");
     System.err.println("                HELP");
     System.err.println("                EXIT");
+  }
+
+  /*
+   * ------------------------------------------------------
+   * Combine array of strings into one strings
+   * Argument: String[] str_arr int start_idx
+   * Return: char[] result
+   */
+  public static char[] combineString(String[] str_arr, int start_idx) {
+    String result = new String();
+    for (int i = start_idx; i < (str_arr.length-1); i++) {
+      result += str_arr[i] + " ";
+    }
+    result += str_arr[str_arr.length-1];
+    char[] c_arr = result.toCharArray();
+    if (c_arr[0] == '"' && c_arr[c_arr.length-1] == '"') {
+      result = String.valueOf(c_arr).substring(1, c_arr.length-1);
+    }
+    return result.toCharArray();
   }
 }
