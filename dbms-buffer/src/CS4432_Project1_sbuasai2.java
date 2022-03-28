@@ -27,8 +27,8 @@ public class CS4432_Project1_sbuasai2 {
 
     switch (command[0]) {
       case "GET":
-        System.out.println("MODE GET");
-        System.out.println(command[1]);
+        int rr_num = Integer.parseInt(command[1]);
+        bp.get(rr_num);
         break;
 
       case "SET":
@@ -46,8 +46,7 @@ public class CS4432_Project1_sbuasai2 {
         System.out.println(command[1]);
         break;
 
-      default:
-        printHelp();
+      default: printHelp();
         break;
     }
 
