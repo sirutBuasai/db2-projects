@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 public class BufferPool {
   // Global variables
   private int NUMRECORD = 100;
+  private int BLOCKSIZE = 4096;
 
   // Class attributes
   private Frame[] buffers;
@@ -55,11 +56,13 @@ public class BufferPool {
       if (frame_num >= 0) {
         // output the content of the given record
         String record_content = String.valueOf(this.buffers[frame_num].getRecord(r_num));
-        System.out.println(record_content + "; Brought file " + block_id + " from disk; Placed in frame " + frame_num);
+        System.out.println(record_content);
+        System.out.println("Brought file " + block_id + " from disk.");
+        System.out.println("Placed in frame " + frame_num + ".");
 
       }
       else {
-        System.out.println("The corresponding block #" + block_id + "cannot be accessed from disk because the memory buffers are full");
+        System.out.println("The corresponding block #" + block_id + "cannot be accessed from disk because the memory buffers are full.");
       }
     }
   }
@@ -74,15 +77,27 @@ public class BufferPool {
     // process block id and record number
     int block_id = this.calcBlockId(rr_num);
     int r_num = this.calcRecordNum(rr_num);
-    // check if the block exists in the buffer pool, and bring to pool if does not exist
+    // check if the block exists in the buffer pool
     int frame_num = this.searchBlock(block_id);
-    // if a block is found or successfully brought to buffer, update the content
+    // if a block is found.
     if (frame_num >= 0) {
+      // update the content of the given record
       this.buffers[frame_num].updateRecord(r_num, new_content);
-      System.out.println("Write was successful");
+      System.out.println("Write was successful.");
+      System.out.println("File " + block_id + " already in memory.");
     }
     else {
-      System.out.println("There currently is no free frame.");
+      // if block is brought into memory
+      frame_num = this.bringBlock(block_id);
+      if (frame_num >= 0) {
+        // update the content of the given record
+        this.buffers[frame_num].updateRecord(r_num, new_content);
+        System.out.println("Write was successful.");
+        System.out.println("Brought file " + block_id + " from disk.");
+      }
+      else {
+        System.out.println("The corresponding block #" + block_id + "cannot be accessed from disk because the memory buffers are full.");
+      }
     }
   }
 
@@ -93,19 +108,6 @@ public class BufferPool {
    * Return: void
    */
   public void pin(int rr_num, char[] new_content) {
-    // process block id and record number
-    int block_id = this.calcBlockId(rr_num);
-    int r_num = this.calcRecordNum(rr_num);
-    // check if the block exists in the buffer pool, and bring to pool if does not exist
-    int frame_num = this.searchBlock(block_id);
-    // if a block is found or successfully brought to buffer, update the content
-    if (frame_num >= 0) {
-      this.buffers[frame_num].updateRecord(r_num, new_content);
-      System.out.println("Write was successful");
-    }
-    else {
-      System.out.println("There currently is no free frame.");
-    }
   }
 
   /*
@@ -163,8 +165,8 @@ public class BufferPool {
       this.buffers[free_frame].setContent(output);
       // update metadata
       this.buffers[free_frame].setBlockId(block_id);
-      this.map.put(block_id, free_frame);
       this.bitmap[free_frame] = 1;
+      this.map.put(block_id, free_frame);
       return free_frame;
     }
     else {
@@ -206,7 +208,7 @@ public class BufferPool {
         }
         // reset all the metadata
         map.remove(this.buffers[i].getBlockId());
-        this.buffers[i].setContent(new char[BLOCKSIZE);
+        this.buffers[i].setContent(new char[BLOCKSIZE]);
         this.buffers[i].setDirty(false);
         this.buffers[i].setPinned(false);
         this.buffers[i].setBlockId(-1);
