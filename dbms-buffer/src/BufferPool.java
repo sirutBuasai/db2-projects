@@ -47,7 +47,7 @@ public class BufferPool {
     if (frame_num >= 0) {
       // output the content of the given record
       String record_content = String.valueOf(this.buffers[frame_num].getRecord(r_num));
-      System.out.println(record_content + "; File" + block_id + " is already in memory; Located in frame " + frame_num);
+      System.out.println(record_content + "; File " + block_id + " is already in memory; Located in frame " + frame_num);
     }
     else {
       // if block is brought into memory
@@ -58,7 +58,9 @@ public class BufferPool {
         System.out.println(record_content + "; Brought file " + block_id + " from disk; Placed in frame " + frame_num);
 
       }
-      System.out.println("The corresponding block #" + block_id + "cannot be accessed from disk because the memory buffers are full");
+      else {
+        System.out.println("The corresponding block #" + block_id + "cannot be accessed from disk because the memory buffers are full");
+      }
     }
   }
 
@@ -202,6 +204,13 @@ public class BufferPool {
         if (this.buffers[i].getDirty()) {
           this.writeToBlock(i);
         }
+        // reset all the metadata
+        map.remove(this.buffers[i].getBlockId());
+        this.buffers[i].setContent(new char[BLOCKSIZE);
+        this.buffers[i].setDirty(false);
+        this.buffers[i].setPinned(false);
+        this.buffers[i].setBlockId(-1);
+        this.bitmap[i] = 0;
         return i;
       }
     }
@@ -226,10 +235,6 @@ public class BufferPool {
       file_writer.write(data);
       // close file writer
       file_writer.close();
-    // reset all the metadata
-    this.buffers[frame_idx].setDirty(false);
-    this.buffers[frame_idx].setPinned(false);
-    this.buffers[frame_idx].setBlockId(-1);
     }
     catch (Exception e) {
       System.err.println("Error: Cannot find or open file");
