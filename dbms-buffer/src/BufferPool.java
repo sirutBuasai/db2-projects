@@ -257,14 +257,31 @@ public class BufferPool {
    * Return: int frame_num, -1 if no frame can be removed
    */
   public int removableFrame() {
-    // if the removeIdx is the last index, reset it to 0
-    if (this.removeIdx == (this.buffers.length-1)) {
-      this.removeIdx = 0;
-    }
     // iterate through the buffer array and check for the first frame to be removed
     for (int i = removeIdx; i < this.buffers.length; i++) {
       // if the frame is pinned, skip it, otherwise, check for dirty bit
       if (!this.buffers[i].getPinned()) {
+        removeIdx = i+1;
+        // if the frame is dirty, write before removing the frame
+        if (this.buffers[i].getDirty()) {
+          this.writeToBlock(i);
+        }
+        // reset all the metadata
+        evictionString = "Evicted file " + this.buffers[i].getBlockId() + " from frame " + (i+1);
+        map.remove(this.buffers[i].getBlockId());
+        this.buffers[i].setContent(new char[BLOCKSIZE]);
+        this.buffers[i].setDirty(false);
+        this.buffers[i].setPinned(false);
+        this.buffers[i].setBlockId(-1);
+        this.bitmap[i] = 0;
+        return i;
+      }
+    }
+    // iterate in again from index 0 to the removeIdx as a circular motion
+    for (int i = 0; i < removeIdx; i++) {
+      // if the frame is pinned, skip it, otherwise, check for dirty bit
+      if (!this.buffers[i].getPinned()) {
+        removeIdx = i+1;
         // if the frame is dirty, write before removing the frame
         if (this.buffers[i].getDirty()) {
           this.writeToBlock(i);
