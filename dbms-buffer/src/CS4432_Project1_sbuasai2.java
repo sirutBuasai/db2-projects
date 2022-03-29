@@ -51,13 +51,13 @@ public class CS4432_Project1_sbuasai2 {
         case "PIN":
           // pin the frame given a block id
           block_id = Integer.parseInt(command[1]);
-          // bp.pin(block_id);
+          bp.pin(block_id);
           break;
 
         case "UNPIN":
           // unpin the frame given a block id
           block_id = Integer.parseInt(command[1]);
-          // bp.unpin(block_id);
+          bp.unpin(block_id);
           break;
 
         case "HELP":

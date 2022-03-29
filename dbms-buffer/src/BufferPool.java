@@ -110,12 +110,12 @@ public class BufferPool {
     if (frame_num >= 0) {
       // if the pinned is already set, do nothing
       if (this.buffers[frame_num].getPinned()) {
-        System.out.println("File " + block_id + "pinned in Frame " + frame_num + "; Already pinned");
+        System.out.println("File " + block_id + " pinned in Frame " + frame_num + "; Already pinned");
       }
       else {
         // update the content of the given record
         this.buffers[frame_num].setPinned(true);
-        System.out.println("File " + block_id + "pinned in frame " + frame_num + "; Not already pinned");
+        System.out.println("File " + block_id + " pinned in frame " + frame_num + "; Not already pinned");
       }
     }
     else {
@@ -124,7 +124,7 @@ public class BufferPool {
       if (frame_num >= 0) {
         // update the content of the given record
         this.buffers[frame_num].setPinned(true);
-        System.out.println("File " + block_id + "pinned in frame " + frame_num + "; Not already pinned");
+        System.out.println("File " + block_id + " pinned in frame " + frame_num + "; Not already pinned");
       }
       else {
         System.out.println("The corresponding block " + block_id + " cannot be pinned because the memory buffers are full");
@@ -209,17 +209,18 @@ public class BufferPool {
     if (free_frame >= 0) {
       // read the block content and bring to memory
       String file_name = "F" + String.valueOf(block_id) + ".txt";
-      char[] output = this.readFile(file_name).toCharArray();
-      this.buffers[free_frame].setContent(output);
-      // update metadata
-      this.buffers[free_frame].setBlockId(block_id);
-      this.bitmap[free_frame] = 1;
-      this.map.put(block_id, free_frame);
-      return free_frame;
+      String str = this.readFile(file_name);
+      if (str != "Error") {
+        char[] output = str.toCharArray();
+        this.buffers[free_frame].setContent(output);
+        // update metadata
+        this.buffers[free_frame].setBlockId(block_id);
+        this.bitmap[free_frame] = 1;
+        this.map.put(block_id, free_frame);
+        return free_frame;
+      }
     }
-    else {
-      return -1;
-    }
+    return -1;
   }
 
   /*
@@ -312,11 +313,12 @@ public class BufferPool {
       }
       // close file reader
       file_reader.close();
+      return data;
     }
     catch (FileNotFoundException e) {
       System.err.println("Error: Cannot find or open file");
       e.printStackTrace();
+      return "Error";
     }
-    return data;
   }
 }
