@@ -8,6 +8,7 @@ public class BufferPool {
   // Global variables
   private int NUMRECORD = 100;
   private int BLOCKSIZE = 4096;
+  private String evictionString = "";
 
   // Class attributes
   private Frame[] buffers;
@@ -50,7 +51,8 @@ public class BufferPool {
     if (frame_num >= 0) {
       // output the content of the given record
       String record_content = String.valueOf(this.buffers[frame_num].getRecord(r_num));
-      System.out.println(record_content + "; File " + block_id + " is already in memory; Located in frame " + (frame_num+1));
+      System.out.println(record_content + "; File " + block_id + " is already in memory; Located in frame " + (frame_num+1) + "; " + evictionString);
+      evictionString = "";
     }
     else {
       // if block is brought into memory
@@ -58,8 +60,8 @@ public class BufferPool {
       if (frame_num >= 0) {
         // output the content of the given record
         String record_content = String.valueOf(this.buffers[frame_num].getRecord(r_num));
-        System.out.println(record_content + "; Brought file " + block_id + " from disk; Placed in frame " + (frame_num+1));
-
+        System.out.println(record_content + "; Brought file " + block_id + " from disk; Placed in frame " + (frame_num+1) + "; " +  evictionString);
+        evictionString = "";
       }
       else {
         System.out.println("The corresponding block #" + block_id + "cannot be accessed from disk because the memory buffers are full");
@@ -83,7 +85,8 @@ public class BufferPool {
     if (frame_num >= 0) {
       // update the content of the given record
       this.buffers[frame_num].updateRecord(r_num, new_content);
-      System.out.println("Write was successful; File " + block_id + " already in memory; Located in frame " + (frame_num+1));
+      System.out.println("Write was successful; File " + block_id + " already in memory; Located in frame " + (frame_num+1) + "; " + evictionString);
+      evictionString = "";
     }
     else {
       // if block is brought into memory
@@ -91,7 +94,8 @@ public class BufferPool {
       if (frame_num >= 0) {
         // update the content of the given record
         this.buffers[frame_num].updateRecord(r_num, new_content);
-        System.out.println("Write was successful; Brought file " + block_id + " from disk; Placed in frame " + (frame_num+1));
+        System.out.println("Write was successful; Brought file " + block_id + " from disk; Placed in frame " + (frame_num+1) + "; " + evictionString);
+        evictionString = "";
       }
       else {
         System.out.println("The corresponding block #" + block_id + " cannot be accessed from disk because the memory buffers are full");
@@ -112,12 +116,14 @@ public class BufferPool {
     if (frame_num >= 0) {
       // if the pinned is already set, do nothing
       if (this.buffers[frame_num].getPinned()) {
-        System.out.println("File " + block_id + " pinned in Frame " + (frame_num+1) + "; Already pinned");
+        System.out.println("File " + block_id + " pinned in Frame " + (frame_num+1) + "; Already pinned; " + evictionString);
+        evictionString = "";
       }
       else {
         // update the content of the given record
         this.buffers[frame_num].setPinned(true);
-        System.out.println("File " + block_id + " pinned in frame " + (frame_num+1) + "; Not already pinned");
+        System.out.println("File " + block_id + " pinned in frame " + (frame_num+1) + "; Not already pinned; " + evictionString);
+        evictionString = "";
       }
     }
     else {
@@ -126,7 +132,8 @@ public class BufferPool {
       if (frame_num >= 0) {
         // update the content of the given record
         this.buffers[frame_num].setPinned(true);
-        System.out.println("File " + block_id + " pinned in frame " + (frame_num+1) + "; Not already pinned");
+        System.out.println("File " + block_id + " pinned in frame " + (frame_num+1) + "; Not already pinned; " + evictionString);
+        evictionString = "";
       }
       else {
         System.out.println("The corresponding block " + block_id + " cannot be pinned because the memory buffers are full");
@@ -212,6 +219,7 @@ public class BufferPool {
       // read the block content and bring to memory
       String file_name = "F" + String.valueOf(block_id) + ".txt";
       String str = this.readFile(file_name);
+      // if the reading does not return an error
       if (str != "Error") {
         char[] output = str.toCharArray();
         this.buffers[free_frame].setContent(output);
@@ -262,6 +270,7 @@ public class BufferPool {
           this.writeToBlock(i);
         }
         // reset all the metadata
+        evictionString = "Evicted file " + this.buffers[i].getBlockId() + " from frame " + (i+1);
         map.remove(this.buffers[i].getBlockId());
         this.buffers[i].setContent(new char[BLOCKSIZE]);
         this.buffers[i].setDirty(false);
