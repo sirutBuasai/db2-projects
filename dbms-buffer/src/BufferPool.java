@@ -60,7 +60,7 @@ public class BufferPool {
 
       }
       else {
-        System.out.println("The corresponding block #" + block_id + "cannot be accessed from disk because the memory buffers are full.");
+        System.out.println("The corresponding block #" + block_id + "cannot be accessed from disk because the memory buffers are full");
       }
     }
   }
@@ -92,18 +92,70 @@ public class BufferPool {
         System.out.println("Write was successful; Brought file " + block_id + " from disk; Placed in frame " + frame_num);
       }
       else {
-        System.out.println("The corresponding block #" + block_id + "cannot be accessed from disk because the memory buffers are full.");
+        System.out.println("The corresponding block #" + block_id + " cannot be accessed from disk because the memory buffers are full");
       }
     }
   }
 
   /*
    * ------------------------------------------------------
-   * Set a record content to the given new content
-   * Argument: int rr_num, char[] new_content
+   * Pin a block given a block number
+   * Argument: int block_id
    * Return: void
    */
-  public void pin(int rr_num, char[] new_content) {
+  public void pin(int block_id) {
+    // check if the block exists in the buffer pool
+    int frame_num = this.searchBlock(block_id);
+    // if a block is found.
+    if (frame_num >= 0) {
+      // if the pinned is already set, do nothing
+      if (this.buffers[frame_num].getPinned()) {
+        System.out.println("File " + block_id + "pinned in Frame " + frame_num + "; Already pinned");
+      }
+      else {
+        // update the content of the given record
+        this.buffers[frame_num].setPinned(true);
+        System.out.println("File " + block_id + "pinned in frame " + frame_num + "; Not already pinned");
+      }
+    }
+    else {
+      // if block is brought into memory
+      frame_num = this.bringBlock(block_id);
+      if (frame_num >= 0) {
+        // update the content of the given record
+        this.buffers[frame_num].setPinned(true);
+        System.out.println("File " + block_id + "pinned in frame " + frame_num + "; Not already pinned");
+      }
+      else {
+        System.out.println("The corresponding block " + block_id + " cannot be pinned because the memory buffers are full");
+      }
+    }
+  }
+
+  /*
+   * ------------------------------------------------------
+   * Unpin a block given a block number
+   * Argument: int block_id
+   * Return: void
+   */
+  public void unpin(int block_id) {
+    // check if the block exists in the buffer pool
+    int frame_num = this.searchBlock(block_id);
+    // if a block is found.
+    if (frame_num >= 0) {
+      // update the pinned if it was originally set
+      if (this.buffers[frame_num].getPinned()) {
+        this.buffers[frame_num].setPinned(false);
+        System.out.println("File " + block_id + " in frame " + frame_num + " is unpinned; Frame " + frame_num + " was not already pinned");
+      }
+      else {
+        // if the pinned is not set, do nothing
+        System.out.println("File " + block_id + " in frame " + frame_num + " is unpinned; Frame was already pinned");
+      }
+    }
+    else {
+      System.out.println("The corresponding block " + block_id + " cannot be unpinned because it is not in memory");
+    }
   }
 
   /*
