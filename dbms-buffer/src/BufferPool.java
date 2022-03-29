@@ -56,9 +56,7 @@ public class BufferPool {
       if (frame_num >= 0) {
         // output the content of the given record
         String record_content = String.valueOf(this.buffers[frame_num].getRecord(r_num));
-        System.out.println(record_content);
-        System.out.println("Brought file " + block_id + " from disk.");
-        System.out.println("Placed in frame " + frame_num + ".");
+        System.out.println(record_content + "; Brought file " + block_id + " from disk; Placed in frame " + frame_num);
 
       }
       else {
@@ -83,8 +81,7 @@ public class BufferPool {
     if (frame_num >= 0) {
       // update the content of the given record
       this.buffers[frame_num].updateRecord(r_num, new_content);
-      System.out.println("Write was successful.");
-      System.out.println("File " + block_id + " already in memory.");
+      System.out.println("Write was successful; File " + block_id + " already in memory; Located in frame " + frame_num);
     }
     else {
       // if block is brought into memory
@@ -92,8 +89,7 @@ public class BufferPool {
       if (frame_num >= 0) {
         // update the content of the given record
         this.buffers[frame_num].updateRecord(r_num, new_content);
-        System.out.println("Write was successful.");
-        System.out.println("Brought file " + block_id + " from disk.");
+        System.out.println("Write was successful; Brought file " + block_id + " from disk; Placed in frame " + frame_num);
       }
       else {
         System.out.println("The corresponding block #" + block_id + "cannot be accessed from disk because the memory buffers are full.");
@@ -231,7 +227,7 @@ public class BufferPool {
     String data = String.valueOf(this.buffers[frame_idx].getContent());
     try {
       // initialize file and file writer class
-      File file = new File(".Project1/F"+String.valueOf(this.buffers[frame_idx].getBlockId())+".txt");
+      File file = new File("./Project1/F"+String.valueOf(this.buffers[frame_idx].getBlockId())+".txt");
       FileWriter file_writer = new FileWriter(file, false);
       // write the new content onto disk
       file_writer.write(data);
