@@ -48,7 +48,7 @@ public class BufferPool {
     if (frame_num >= 0) {
       // output the content of the given record
       String record_content = String.valueOf(this.buffers[frame_num].getRecord(r_num));
-      System.out.println(record_content + "; File " + block_id + " is already in memory; Located in frame " + frame_num);
+      System.out.println(record_content + "; File " + block_id + " is already in memory; Located in frame " + (frame_num+1));
     }
     else {
       // if block is brought into memory
@@ -56,7 +56,7 @@ public class BufferPool {
       if (frame_num >= 0) {
         // output the content of the given record
         String record_content = String.valueOf(this.buffers[frame_num].getRecord(r_num));
-        System.out.println(record_content + "; Brought file " + block_id + " from disk; Placed in frame " + frame_num);
+        System.out.println(record_content + "; Brought file " + block_id + " from disk; Placed in frame " + (frame_num+1));
 
       }
       else {
@@ -81,7 +81,7 @@ public class BufferPool {
     if (frame_num >= 0) {
       // update the content of the given record
       this.buffers[frame_num].updateRecord(r_num, new_content);
-      System.out.println("Write was successful; File " + block_id + " already in memory; Located in frame " + frame_num);
+      System.out.println("Write was successful; File " + block_id + " already in memory; Located in frame " + (frame_num+1));
     }
     else {
       // if block is brought into memory
@@ -89,7 +89,7 @@ public class BufferPool {
       if (frame_num >= 0) {
         // update the content of the given record
         this.buffers[frame_num].updateRecord(r_num, new_content);
-        System.out.println("Write was successful; Brought file " + block_id + " from disk; Placed in frame " + frame_num);
+        System.out.println("Write was successful; Brought file " + block_id + " from disk; Placed in frame " + (frame_num+1));
       }
       else {
         System.out.println("The corresponding block #" + block_id + " cannot be accessed from disk because the memory buffers are full");
@@ -110,12 +110,12 @@ public class BufferPool {
     if (frame_num >= 0) {
       // if the pinned is already set, do nothing
       if (this.buffers[frame_num].getPinned()) {
-        System.out.println("File " + block_id + " pinned in Frame " + frame_num + "; Already pinned");
+        System.out.println("File " + block_id + " pinned in Frame " + (frame_num+1) + "; Already pinned");
       }
       else {
         // update the content of the given record
         this.buffers[frame_num].setPinned(true);
-        System.out.println("File " + block_id + " pinned in frame " + frame_num + "; Not already pinned");
+        System.out.println("File " + block_id + " pinned in frame " + (frame_num+1) + "; Not already pinned");
       }
     }
     else {
@@ -124,7 +124,7 @@ public class BufferPool {
       if (frame_num >= 0) {
         // update the content of the given record
         this.buffers[frame_num].setPinned(true);
-        System.out.println("File " + block_id + " pinned in frame " + frame_num + "; Not already pinned");
+        System.out.println("File " + block_id + " pinned in frame " + (frame_num+1) + "; Not already pinned");
       }
       else {
         System.out.println("The corresponding block " + block_id + " cannot be pinned because the memory buffers are full");
@@ -146,11 +146,11 @@ public class BufferPool {
       // update the pinned if it was originally set
       if (this.buffers[frame_num].getPinned()) {
         this.buffers[frame_num].setPinned(false);
-        System.out.println("File " + block_id + " in frame " + frame_num + " is unpinned; Frame " + frame_num + " was not already pinned");
+        System.out.println("File " + block_id + " in frame " + (frame_num+1) + " is unpinned; Frame " + (frame_num+1) + " was not already unpinned");
       }
       else {
         // if the pinned is not set, do nothing
-        System.out.println("File " + block_id + " in frame " + frame_num + " is unpinned; Frame was already pinned");
+        System.out.println("File " + block_id + " in frame " + (frame_num+1) + " is unpinned; Frame was already unpinned");
       }
     }
     else {
