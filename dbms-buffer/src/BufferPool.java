@@ -12,7 +12,8 @@ public class BufferPool {
   // Class attributes
   private Frame[] buffers;
   private int[] bitmap;
-  private HashMap<Integer, Integer> map = new HashMap<>();   // K: block_id, V: frame_num
+  private HashMap<Integer, Integer> map = new HashMap<>(); // K: block_id, V: frame_num
+  private int removeIdx;
 
   // Empty constructor
   public BufferPool() {}
@@ -24,6 +25,7 @@ public class BufferPool {
     // initialize the buffer array
     this.buffers = new Frame[buffer_size];
     this.bitmap = new int[buffer_size];
+    this.removeIdx = 0;
     // populate the buffer array with frames
     for (int i = 0; i < buffer_size; i++) {
       Frame f = new Frame();
@@ -247,8 +249,12 @@ public class BufferPool {
    * Return: int frame_num, -1 if no frame can be removed
    */
   public int removableFrame() {
+    // if the removeIdx is the last index, reset it to 0
+    if (this.removeIdx == (this.buffers.length-1)) {
+      this.removeIdx = 0;
+    }
     // iterate through the buffer array and check for the first frame to be removed
-    for (int i = 0; i < this.buffers.length; i++) {
+    for (int i = removeIdx; i < this.buffers.length; i++) {
       // if the frame is pinned, skip it, otherwise, check for dirty bit
       if (!this.buffers[i].getPinned()) {
         // if the frame is dirty, write before removing the frame
