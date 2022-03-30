@@ -170,7 +170,6 @@ public class BufferPool {
   /*
    * Other methods ----------------------------------------
    * Conversion from raw record number to block number
-   * Eg: raw number of 250 is a block number 3
    * Argument: int rr_num
    * Return: int block_id
    */
@@ -181,7 +180,6 @@ public class BufferPool {
   /*
    * ------------------------------------------------------
    * Conversion from raw record number to normal record number
-   * Eg: raw number of 250 is a normal number of 49th indexed record on the third block
    * Argument: int rr_num
    * Return: int r_num
    */
@@ -209,7 +207,7 @@ public class BufferPool {
 
   /*
    * ------------------------------------------------------
-   * Bring block into the specified
+   * Bring block into a free frame
    * Argument: int block_id
    * Return: int free_frame if succeed, -1 if not
    */
@@ -246,7 +244,7 @@ public class BufferPool {
         return i;
       }
     }
-    // if none of the frames are free, return -1
+    // if none of the frames are free, try to remove one of the frames, if not possible return -1
     return this.removableFrame();
   }
 
@@ -261,6 +259,7 @@ public class BufferPool {
     for (int i = removeIdx; i < this.buffers.length; i++) {
       // if the frame is pinned, skip it, otherwise, check for dirty bit
       if (!this.buffers[i].getPinned()) {
+        // move the removeIdx for the last evicted frame
         removeIdx = i+1;
         // if the frame is dirty, write before removing the frame
         if (this.buffers[i].getDirty()) {
@@ -281,6 +280,7 @@ public class BufferPool {
     for (int i = 0; i < removeIdx; i++) {
       // if the frame is pinned, skip it, otherwise, check for dirty bit
       if (!this.buffers[i].getPinned()) {
+        // move the removeIdx for the last evicted frame
         removeIdx = i+1;
         // if the frame is dirty, write before removing the frame
         if (this.buffers[i].getDirty()) {

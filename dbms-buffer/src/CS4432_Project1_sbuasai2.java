@@ -13,11 +13,13 @@ public class CS4432_Project1_sbuasai2 {
         break;
 
       default:
-        printHelp();
-        break;
+        System.err.println("Error: Program only accepts one argument.");
+        System.err.println("Usage: java CS4432_Project1_sbuasai2 <int>");
+        System.err.println("Example: java CS4432_Project1_sbuasai2 3");
+        System.exit(1);
     }
 
-    // initialize the buffer pooland global variables
+    // initialize the buffer pool and global variables
     BufferPool bp = new BufferPool();
     bp.initialize(buffer_size);
     int rr_num;
@@ -42,7 +44,7 @@ public class CS4432_Project1_sbuasai2 {
           break;
 
         case "SET":
-          // set the record content to the new content given a recrd number
+          // set the record content to the new content given a record number
           rr_num = Integer.parseInt(command[1]);
           record_content = combineString(command, 2);
           bp.set(rr_num, record_content);
