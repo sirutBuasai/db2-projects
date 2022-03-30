@@ -30,7 +30,7 @@
   - To bring a block to the frame, I implemented a function `bringBlock()` that tries to read the file and copy the file content to memory in the frame content. If successful, return the frame number and -1 otherwise.
   - To search for a free frame, I implemented a function `searchFreeFrame()` that utilizes the class attribute `int[] bitmap` to see if any of the frames are free.
     - The `bitmap` array is an array of the same length with `Frame[] buffers`. Each index corresponds to each frame_num and the values are 0 if a frame is free and 1 if not free.
-  - `removableFrame()` interates through the buffer and check if any block is removable from the frame. This function is called inside `searchFreeFrame()` in the case that there is not free frame available.
+  - `removableFrame()` iterates through the buffer and check if any block is removable from the frame. This function is called inside `searchFreeFrame()` in the case that there is not free frame available.
     - This function will return -1 if none if all the frames are full and all blocks are pinned.
     - This function also encapsulates the replacement policy of last evicted frame using the class attribute `int removeIdx`.
   - To write a modified content back to disk, I implemented a function `writeToBlock()` that try to overwrite the file with the new content using `FileWriter`.
@@ -38,7 +38,7 @@
 - CS4432_Project1_sbuasai2 class
   - This is the main class for this project program.
   - First switch case statement handles the argument given to the program, specifically, the buffer size given by the user.
-  - After argument handling, I initialzed all necessary variables and the buffer pool to store all the frames.
+  - After argument handling, I initialized all necessary variables and the buffer pool to store all the frames.
   - After initialization, the program goes into a loop waiting for commands `GET, SET, PIN, UNPIN, HELP, EXIT` using a switch case statement.
   - I implemented a `toUpperCase()` in the switch case to make sure that as long as the user spell the commands correctly, the program will execute the commands without case sensitivity.
   - In addition to the required commands `GET, SET, PIN, UNPIN`, I implemented `HELP` for the user to see help within the program and `EXIT` when the user is done executing commands and exist the program.
