@@ -31,8 +31,7 @@ public class HashIndex {
         String original_data = curr_key.substring(0, file_idx+3);
         String curr_record = record_loc.substring(3);
         String original_record = curr_key.substring(file_idx+3);
-        curr_key = original_data + curr_record + original_record;
-
+        curr_key = original_data + curr_record + "," + original_record;
         // update the key with the new value
         hash_map.replace(randomV, curr_key);
       }
