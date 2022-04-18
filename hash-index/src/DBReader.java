@@ -41,8 +41,7 @@ public class DBReader implements Iterator<String> {
   /*
    * ------------------------------------------------------
    * Override next in Iterator<String>
-   * Returns the next record, if we have reached the last record, go to the first
-   * record of the next block
+   * Returns the next record, if we have reached the last record, go to the first record of the next block
    * Argument: void
    * Return: String result
    */
@@ -58,7 +57,9 @@ public class DBReader implements Iterator<String> {
       this.block = readFile(this.curr_file);
     }
     // increment the record pointer and return the record content
-    this.curr_record++;
+    else {
+      this.curr_record++;
+    }
     String result = String.valueOf(record);
     return result;
   }
