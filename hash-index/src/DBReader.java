@@ -139,5 +139,4 @@ public class DBReader implements Iterator<String> {
     // print metadata on number of files accessed
     System.out.println("Number of files accessed: " + record_loc.length);
   }
-
 }
