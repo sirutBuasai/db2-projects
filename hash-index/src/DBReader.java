@@ -3,114 +3,141 @@ import java.io.FileNotFoundException;
 import java.util.Iterator;
 import java.util.Scanner;
 
-// By implementing the string iterator we have access to hasnext and next commands in different classes
+// implements Iterator<String> to allow for reading the files as Strings
 public class DBReader implements Iterator<String> {
-  private int numFiles;
-  private int numRecords = 100;
-  private int currFile;
-  private int currRecord;
-  private char[] block;
-  private static int bytesPerRecord = 40;
+  // Global variables
+  private static int RECORDSIZE = 40;
+  private int NUMRECORD = 100;
 
+  // Class attributes
+  private int num_files;
+  private int curr_file;
+  private int curr_record;
+  private char[] block;
+
+  /*
+   * Constructor ------------------------------------------
+   */
   public DBReader() {
-    numFiles = new File("Project2Dataset").listFiles().length;
-    currFile = 1;
-    currRecord = 1;
-    block = readBlock(1);
+    this.num_files = new File("Project2Dataset").listFiles().length;
+    this.curr_file = 1;
+    this.curr_record = 1;
+    this.block = readFile(1);
   }
 
-  // Returns true if current record is the last record, false otherwise
-  // Override hasnext
+  /*
+   * ------------------------------------------------------
+   * Override hasNext in Iterator<String>
+   * Returns true if the current record is not the last record, false otherwise
+   * Argument: void
+   * Return: boolean hasnext
+   */
   @Override
   public boolean hasNext() {
-    if (currRecord == numRecords)
-      return currFile != numFiles;
-    return true;
+    boolean hasnext = (this.curr_record == NUMRECORD) ? (this.curr_file != this.num_files) : true;
+    return hasnext;
   }
 
-  // Override next
+  /*
+   * ------------------------------------------------------
+   * Override next in Iterator<String>
+   * Returns the next record, if we have reached the last record, go to the first
+   * record of the next block
+   * Argument: void
+   * Return: String result
+   */
   @Override
   public String next() {
-    char[] record = new char[bytesPerRecord];
-    // Copy contents of one array to the other
-    System.arraycopy(block, (bytesPerRecord * (currRecord - 1)), record, 0, bytesPerRecord);
-
-    // If we reached last record, reset vars
-    if (currRecord == numRecords) {
-      currRecord = 1;
-      currFile++;
-      block = readBlock(currFile);
+    // initialize record and copy the block content to the record
+    char[] record = new char[RECORDSIZE];
+    System.arraycopy(this.block, (RECORDSIZE * (this.curr_record - 1)), record, 0, RECORDSIZE);
+    // if last record is read, reset the metadata to the next block
+    if (this.curr_record == NUMRECORD) {
+      this.curr_record = 1;
+      this.curr_file++;
+      this.block = readFile(this.curr_file);
     }
-
-    // Increment current record and return the newly created record char array in
-    // string format
-    currRecord++;
-    return new String(record);
+    // increment the record pointer and return the record content
+    this.curr_record++;
+    String result = String.valueOf(record);
+    return result;
   }
 
-  // Read fileID and return as char array
-  private char[] readBlock(int fileID) {
-    Scanner s;
-    // Try catch for file not found
-    try {
-      // Use delimeter to make sure it is end of input
-      s = new Scanner(new File("Project2Dataset/F" + fileID + ".txt")).useDelimiter("\\Z");
-    } catch (FileNotFoundException e) {
-      // Print that a file could not be found and reset vars
-      // (Basically just skip all the other files)
-      System.out.println("File " + fileID + " could not be found");
-      currFile = numFiles;
-      currRecord = numRecords - 1;
+  /*
+   * ------------------------------------------------------
+   * Read the file and extract content
+   * Argument: int file_id
+   * Return: char[] content
+   */
+  private char[] readFile(int file_id) {
+    // initialize file Scanner for reading a file
+    try (Scanner scanner = new Scanner(new File("Project2Dataset/F" + file_id + ".txt")).useDelimiter("\\Z")) {
+      // set data read from scanner to char array content and return the content
+      char[] content = scanner.next().toCharArray();
+      return content;
+    }
+    // if file not found, throw error and return null
+    catch (FileNotFoundException e) {
+      // reset metadata
+      this.curr_file = this.num_files;
+      this.curr_record = NUMRECORD - 1;
+      // throw error message
+      System.err.println("Error: File F" + file_id + ".txt is not found.");
       e.printStackTrace();
       return null;
     }
-
-    // Otherwise, return char array as intended
-    return s.next().toCharArray();
   }
 
-  // Read array of record IDs
-  protected static void printRecords(int fileID, int[] recordIDs) {
-    Scanner s;
-
-    // Try catch for file not found
-    try {
-      s = new Scanner(new File("Project2Dataset/F" + fileID + ".txt")).useDelimiter("\\Z");
-      String block = s.next();
-
-      // Loop over record ids
-      for (int rID : recordIDs)
-        System.out.println(block.substring((rID - 1) * bytesPerRecord, rID * bytesPerRecord));
-
-    } catch (FileNotFoundException e) {
-      System.out.println("File " + fileID + " could not be found");
+  /*
+   * Static methods ---------------------------------------
+   * Given a file_id and array of record_id, print out all the record content
+   * Argument: int file_id, int[] record_arr
+   * Return: void
+   */
+  public static void printRecords(int file_id, int[] record_arr) {
+    // initialize file Scanner for reading a file
+    try (Scanner scanner = new Scanner(new File("Project2Dataset/F" + file_id + ".txt")).useDelimiter("\\Z")) {
+      // initialize block_content
+      String block_content = scanner.next();
+      // loop over each record in the record array
+      for (int record_id : record_arr) {
+        int r_start = (record_id - 1) * RECORDSIZE;
+        int r_end = record_id * RECORDSIZE;
+        System.out.println(block_content.substring(r_start, r_end));
+      }
+    }
+    // if file not found, throw error
+    catch (FileNotFoundException e) {
+      System.out.println("File " + file_id + " could not be found");
       e.printStackTrace();
     }
   }
 
-  // Prints record
-  protected static void printRecord(String s) {
-    String[] fileAndRecords = s.split(";");
+  /*
+   * ------------------------------------------------------
+   * Overload printRecord() method
+   * Given a string of file_id:record_id, print out the record content in the string
+   * Argument: String record_arr
+   * Return: void
+   */
+  public static void printRecord(String record_arr) {
+    String[] record_loc = record_arr.split(";");
 
-    for (String FAR : fileAndRecords) {
-      // Get file ID and do some string parsing to create an array of record IDs
-      int fileID = Integer.parseInt(FAR.substring(0, 2));
-      // Remove spaces, as they were causing some issues
-      FAR = FAR.substring(3).replace(" ", "");
-      String[] records = FAR.split(",");
-      int[] recordIDs = new int[records.length];
-
-      // Loop over records and add to array
+    for (String location : record_loc) {
+      // extract file_id values
+      int file_id = Integer.parseInt(location.substring(0, 2));
+      // extract record_id values
+      location = location.substring(3);
+      String[] records = location.split(",");
+      int[] record_ids = new int[records.length];
       for (int i = 0; i < records.length; i++) {
-        recordIDs[i] = Integer.parseInt(records[i]);
+        record_ids[i] = Integer.parseInt(records[i]);
       }
-
-      // Print records
-      DBReader.printRecords(fileID, recordIDs);
+      // print records normally given file_id and record_ids
+      DBReader.printRecords(file_id, record_ids);
     }
-
-    // Print number of files read
-    System.out.println("Number of files read: " + fileAndRecords.length);
+    // print metadata on number of files accessed
+    System.out.println("Number of files accessed: " + record_loc.length);
   }
 
 }

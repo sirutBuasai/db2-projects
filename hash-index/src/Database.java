@@ -129,7 +129,7 @@ public class Database implements Iterable<String> {
       }
     }
     System.out.println("Used full table scan");
-    System.out.println("Number of files read: " + (int) Math.ceil(num_files / 100));
+    System.out.println("Number of files accessed: " + (int) Math.ceil(num_files / 100));
   }
 
   /*
@@ -149,7 +149,7 @@ public class Database implements Iterable<String> {
       }
     }
     System.out.println("Used full table scan");
-    System.out.println("Number of files read: " + (int) Math.ceil(num_files / 100));
+    System.out.println("Number of files accessed: " + (int) Math.ceil(num_files / 100));
   }
 
   /*
@@ -169,6 +169,6 @@ public class Database implements Iterable<String> {
       }
     }
     System.out.println("Used full table scan");
-    System.out.println("Number of files read: " + (int) Math.ceil(num_files / 100));
+    System.out.println("Number of files accessed: " + (int) Math.ceil(num_files / 100));
   }
 }
