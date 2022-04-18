@@ -41,7 +41,7 @@ public class CS4432_Project2_sbuasai2 {
         db.search(1, v1, v2);
       }
       // exit the program
-      else if (input.contains("EXIT")) {
+      else if (input.equals("EXIT")) {
         System.out.println("Database terminated.");
         active = false;
       }
