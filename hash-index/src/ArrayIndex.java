@@ -5,8 +5,8 @@ public class ArrayIndex {
   /*
    * Constructor ------------------------------------------
    */
-  protected ArrayIndex(){
-      array = new String[5000];
+  public ArrayIndex() {
+    array = new String[5000];
   }
 
   /*
@@ -15,11 +15,11 @@ public class ArrayIndex {
    * Argument: int randomV, String record_loc
    * Return: void
    */
-  public void add(int randomV, String record_loc){
+  public void add(int randomV, String record_loc) {
     // calculate appropriate 0-indexed array
     randomV -= 1;
     // if the given randomV does not exist, add the new record
-    if( array[randomV] == null) {
+    if (array[randomV] == null) {
       array[randomV] = record_loc;
     }
     // otherwise, append the new record to the existing array
@@ -33,7 +33,7 @@ public class ArrayIndex {
         // curr_key = original_data + curr_record + , + original_record
         String original_data = curr_idx.substring(0, file_idx + 3);
         String curr_record = record_loc.substring(3);
-        String original_record = curr_idx.substring(file_idx+3);
+        String original_record = curr_idx.substring(file_idx + 3);
         array[randomV] = original_data + curr_record + "," + original_record;
       }
       // otherwise, append the both file_id and record_id
@@ -43,7 +43,6 @@ public class ArrayIndex {
     }
   }
 
-
   /*
    * ------------------------------------------------------
    * Get all thge records within the given key range
@@ -51,7 +50,7 @@ public class ArrayIndex {
    * return: void
    */
   // Prints records with randomV value in given range
-  public void readRange(int m, int n){
+  public void readRange(int m, int n) {
     // cap the maximum range to 5000 and the minimum range to 0
     n = n > 5000 ? 5000 : n;
     m = m < 0 ? 0 : m;
@@ -73,9 +72,9 @@ public class ArrayIndex {
             int file_idx = output.indexOf(f.substring(0, 3));
             // append the curr_record to the correct file_id given by the file_idx
             // output = original_data + curr_record + , + original_record
-            String original_data = output.substring(0, file_idx+3);
+            String original_data = output.substring(0, file_idx + 3);
             String curr_record = f.substring(3);
-            String original_record = output.substring(file_idx+3);
+            String original_record = output.substring(file_idx + 3);
             output = original_data + curr_record + "," + original_record;
           }
           // otherwise, add both file and record to the output
