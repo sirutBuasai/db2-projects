@@ -23,7 +23,7 @@ public class Database implements Iterable<String> {
    * Argument: void
    * Return: void
    */
-  public void createIndexes() {
+  public void createIndex() {
     this.hash_idx = new HashIndex();
     this.arr_idx = new ArrayIndex();
     this.creation = true;
@@ -42,6 +42,7 @@ public class Database implements Iterable<String> {
     }
     System.out.println("The hash-based and array-based indexes are built successfully.");
     System.out.println("Program is ready and waiting for user command.");
+    System.out.println("-----------------------------------");
   }
 
   /*
@@ -86,6 +87,7 @@ public class Database implements Iterable<String> {
     // calculate and print total time in ms
     long total = TimeUnit.MILLISECONDS.convert(System.nanoTime() - start, TimeUnit.NANOSECONDS);
     System.out.println("Query time: " + total + "ms");
+    System.out.println("-----------------------------------");
   }
 
   /*
