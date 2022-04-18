@@ -7,7 +7,7 @@ public class HashIndex {
   /*
    * Constructor ----------------------------------------
    */
-  public HashIndex(){
+  public HashIndex() {
     hash_map = new HashMap<Integer, String>();
   }
 
@@ -17,7 +17,7 @@ public class HashIndex {
    * Argument: int randomV, String record_loc
    * Return: void
    */
-  public void add(int randomV, String record_loc){
+  public void add(int randomV, String record_loc) {
     // if the hash_map already contains randomV as a key, append the record location
     if (hash_map.containsKey(randomV)) {
       // get the value of the current indexed randomV
@@ -28,9 +28,9 @@ public class HashIndex {
         int file_idx = curr_key.indexOf(record_loc.substring(0, 3));
         // append the curr_record to the correct file_id given by the file_idx
         // curr_key = original_data + curr_record + , + original_record
-        String original_data = curr_key.substring(0, file_idx+3);
+        String original_data = curr_key.substring(0, file_idx + 3);
         String curr_record = record_loc.substring(3);
-        String original_record = curr_key.substring(file_idx+3);
+        String original_record = curr_key.substring(file_idx + 3);
         curr_key = original_data + curr_record + "," + original_record;
         // update the key with the new value
         hash_map.replace(randomV, curr_key);
@@ -52,13 +52,12 @@ public class HashIndex {
    * Argument: int RandomV
    * Return: void
    */
-  public void read(int randomV){
+  public void read(int randomV) {
     // if hashmap does not contain key, say so
     if (!hash_map.containsKey(randomV)) {
       System.err.println("Cannot find records with randomV of " + randomV);
       System.err.println("No I/O performed.");
-    }
-    else {
+    } else {
       DBReader.printRecord(hash_map.get(randomV));
     }
   }
