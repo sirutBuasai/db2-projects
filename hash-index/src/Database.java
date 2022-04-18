@@ -24,6 +24,7 @@ public class Database implements Iterable<String> {
    * Return: void
    */
   public void createIndex() {
+    // Initialize metadata
     this.hash_idx = new HashIndex();
     this.arr_idx = new ArrayIndex();
     this.creation = true;
