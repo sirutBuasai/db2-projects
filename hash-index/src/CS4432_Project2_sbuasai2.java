@@ -43,7 +43,7 @@ public class CS4432_Project2_sbuasai2 {
       // exit the program
       else if (input.contains("EXIT")) {
         System.out.println("Database terminated.");
-        break;
+        active = false;
       }
       // help cases
       else {
