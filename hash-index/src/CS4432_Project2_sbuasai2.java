@@ -17,7 +17,7 @@ public class CS4432_Project2_sbuasai2 {
       String input = reader.readLine().toUpperCase();
 
       // input parsing
-      // create hash and arra indices
+      // create hash and array indices
       if (input.contains("CREATE INDEX ON PROJECT2DATASET")) {
         db.createIndex();
       }

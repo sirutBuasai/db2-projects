@@ -25,7 +25,7 @@ public class ArrayIndex {
     // otherwise, append the new record to the existing array
     else {
       String curr_idx = array[randomV];
-      // if the current value alreadu has the file_id, append only the record_id
+      // if the current value already has the file_id, append only the record_id
       if (curr_idx.contains(record_loc.substring(0, 3))) {
         // find the index of the file that the current record is inserting to
         int file_idx = curr_idx.indexOf(record_loc.substring(0, 3));
@@ -45,7 +45,7 @@ public class ArrayIndex {
 
   /*
    * ------------------------------------------------------
-   * Get all thge records within the given key range
+   * Get all the records within the given key range
    * Argument: int m: greater than value, int n: less than value)
    * return: void
    */

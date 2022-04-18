@@ -10,7 +10,7 @@ public class Database implements Iterable<String> {
 
   /*
    * Constructor ------------------------------------------
-   * Overide the iterator so that "this" keyword is used as Iterable<String> type
+   * Override the iterator so that "this" keyword is used as Iterable<String> type
    */
   @Override
   public Iterator<String> iterator() {
