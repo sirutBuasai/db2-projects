@@ -2,7 +2,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class Main {
+public class CS4342_Project2_sbuasai2 {
 
     /*
     Since input is limited to just a few commands, I have basically hardcoded them.
