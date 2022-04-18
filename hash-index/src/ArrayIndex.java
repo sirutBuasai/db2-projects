@@ -46,7 +46,7 @@ public class ArrayIndex {
   /*
    * ------------------------------------------------------
    * Get all thge records within the given key range
-   * Argument: int m (greater than value) and int n (less than value)
+   * Argument: int m: greater than value, int n: less than value)
    * return: void
    */
   // Prints records with randomV value in given range

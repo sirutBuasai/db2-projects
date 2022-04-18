@@ -1,123 +1,172 @@
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 
-// Implement string iterable so we can use "this" as a string type
+// implement Iterable<String> to allow for enhanced for loop with String
 public class Database implements Iterable<String> {
-  private HashIndex hashIndex;
-  private ArrayIndex arrayIndex;
+  // Class attributes
+  private HashIndex hash_idx;
+  private ArrayIndex arr_idx;
+  private boolean creation = false;
 
-  // Called when "CREATE INDEX" is called, initializes the hash and array indexes
-  public void createIndexes() {
-    hashIndex = new HashIndex();
-    arrayIndex = new ArrayIndex();
-
-    // Loop over records
-    for (String r : this) {
-      int randomV = Integer.parseInt(r.substring(33, 37));
-      String fileAndRecordID = r.substring(1, 3) + ":" + r.substring(7, 10);
-
-      // Add randomv and fileandrecordID elements to both indexes
-      hashIndex.add(randomV, fileAndRecordID);
-      arrayIndex.add(randomV, fileAndRecordID);
-    }
-    System.out.println(
-        "The hash-based and array-based indexes are built successfully.\nProgram is ready and waiting for user command");
-  }
-
-  // Main search function! The motherboard of the cpu, the controller of all
-  // searches
-  // 0: equality search
-  // 1: range search
-  // 2: inequality table scan
-  // 3: equality table scan
-  // 4: range table scan
-  // 5: inequality table scan
-  protected void search(int searchType, int randomV1, int randomV2) {
-    // If no indexes, use table scans
-    if (hashIndex == null) {
-      searchType += 3;
-    }
-
-    // Keep track of how long it takes
-    long start = System.currentTimeMillis();
-
-    // Analyze search type and use corresponding search method
-    switch (searchType) {
-      case 0:
-        equalitySearch(randomV1);
-        break;
-      case 1:
-        rangeSearch(randomV1, randomV2);
-        break;
-      case 2:
-        inequalityTableScan(randomV1);
-        break;
-      case 3:
-        equalityTableScan(randomV1);
-        break;
-      case 4:
-        rangeTableScan(randomV1, randomV2);
-        break;
-      case 5:
-        System.out.println("No index available...");
-        inequalityTableScan(randomV1);
-        break;
-
-    }
-
-    // Calculate total time and print it
-    long totalTime = System.currentTimeMillis() - start;
-    System.out.println("Search time: " + totalTime + "ms");
-  }
-
-  public void equalitySearch(int randomV) {
-    hashIndex.read(randomV);
-    System.out.println("Used hash-based indexing");
-  }
-
-  public void rangeSearch(int greaterThan, int lessThan) {
-    arrayIndex.readRange(greaterThan, lessThan);
-    System.out.println("Used array-based indexing");
-  }
-
-  public void equalityTableScan(int randomV) {
-    // Loop over records
-    for (String r : this) {
-      if (Integer.parseInt(r.substring(33, 37)) == randomV) {
-        System.out.println(r);
-      }
-    }
-    System.out.println("Full table scan completed (no index available)");
-    System.out.println("99 files read");
-  }
-
-  public void rangeTableScan(int greaterThan, int lessThan) {
-    // Loop over records
-    for (String r : this) {
-      if (Integer.parseInt(r.substring(33, 37)) > greaterThan &&
-          Integer.parseInt(r.substring(33, 37)) < lessThan)
-        System.out.println(r);
-    }
-
-    System.out.println("Full table scan completed (no index available");
-    System.out.println("99 files read");
-  }
-
-  public void inequalityTableScan(int randomV) {
-    // Loop over records
-    for (String r : this) {
-      if (Integer.parseInt(r.substring(33, 37)) != randomV) {
-        System.out.println(r);
-      }
-    }
-    System.out.println("Table scan was used");
-    System.out.println("99 files read");
-  }
-
-  // Override the iterator so we can use "this" in for loops to refer to self as
-  // string array type
+  /*
+   * Constructor ------------------------------------------
+   * Overide the iterator so that "this" keyword is used as Iterable<String> type
+   */
   @Override
   public Iterator<String> iterator() {
     return new DBReader();
   }
 
+  /*
+   * ------------------------------------------------------
+   * Initializes the has and array indices to store the RandomV as index when CREATE INDEX is called by the user
+   * Argument: void
+   * Return: void
+   */
+  public void createIndexes() {
+    this.hash_idx = new HashIndex();
+    this.arr_idx = new ArrayIndex();
+    this.creation = true;
+
+    // loop over the records read by the DBReader
+    for (String record : this) {
+      // extract K: randomV and V: record_loc from the record string
+      int randomV = Integer.parseInt(record.substring(33, 37));
+      String file_id = record.substring(1, 3);
+      String record_id = record.substring(7, 10);
+      String record_loc = file_id + ":" + record_id;
+
+      // add randomV as key and record_loc as value to both hash and array indices
+      this.hash_idx.add(randomV, record_loc);
+      this.arr_idx.add(randomV, record_loc);
+    }
+    System.out.println("The hash-based and array-based indexes are built successfully.");
+    System.out.println("Program is ready and waiting for user command.");
+  }
+
+  /*
+   * Main search method -----------------------------------
+   * Switch case for different search types
+   * 0: equality search
+   * 1: range search
+   * 2: inequality table scan
+   * 3: equality table scan
+   * 4: range table scan
+   * 5: inequality table scan
+   * Argument: int type, int key1: always required, int key2: required for range
+   * search
+   * Return: void
+   */
+  public void search(int type, int key1, int key2) {
+    // if the indices has not been created, use table scans
+    type = creation ? type : type + 3;
+    // start timer
+    long start = System.nanoTime();
+    // switch case according to type of searches
+    switch (type) {
+      case 0:
+        equalitySearch(key1);
+        break;
+      case 1:
+        rangeSearch(key1, key2);
+        break;
+      case 2:
+        inequalityTableScan(key1);
+        break;
+      case 3:
+        equalityTableScan(key1);
+        break;
+      case 4:
+        rangeTableScan(key1, key2);
+        break;
+      case 5:
+        inequalityTableScan(key1);
+        break;
+    }
+    // calculate and print total time in ms
+    long total = TimeUnit.MILLISECONDS.convert(System.nanoTime() - start, TimeUnit.NANOSECONDS);
+    System.out.println("Query time: " + total + "ms");
+  }
+
+  /*
+   * ------------------------------------------------------
+   * Perform equality search using hash indexing
+   * Argument: int key: randomV value
+   * Return: void
+   */
+  public void equalitySearch(int key) {
+    this.hash_idx.read(key);
+    System.out.println("Used hash indexing");
+  }
+
+  /*
+   * ------------------------------------------------------
+   * Perform range search using array indexing
+   * Argument: int m: greater than value, int n: less than value
+   * Return: void
+   */
+  public void rangeSearch(int m, int n) {
+    this.arr_idx.readRange(m, n);
+    System.out.println("Used array indexing");
+  }
+
+  /*
+   * ------------------------------------------------------
+   * Perform equality search using table scan
+   * Argument: int key: randomV value
+   * Return: void
+   */
+  public void equalityTableScan(int key) {
+    // loop over all the records in all the files
+    double num_files = 0;
+    for (String record : this) {
+      num_files++;
+      int randomV = Integer.parseInt(record.substring(33, 37));
+      if (randomV == key) {
+        System.out.println(record);
+      }
+    }
+    System.out.println("Used full table scan");
+    System.out.println("Number of files read: " + (int) Math.ceil(num_files / 100));
+  }
+
+  /*
+   * ------------------------------------------------------
+   * Perform range search using table scan
+   * Argument: int m: greater than value, int n: less than value
+   * Return: void
+   */
+  public void rangeTableScan(int m, int n) {
+    // loop over all the records in all the files
+    double num_files = 0;
+    for (String record : this) {
+      num_files++;
+      int randomV = Integer.parseInt(record.substring(33, 37));
+      if (randomV > m && randomV < n) {
+        System.out.println(record);
+      }
+    }
+    System.out.println("Used full table scan");
+    System.out.println("Number of files read: " + (int) Math.ceil(num_files / 100));
+  }
+
+  /*
+   * ------------------------------------------------------
+   * Perform inequality search using table scan
+   * Argument: int key: randomV value
+   * Return: void
+   */
+  public void inequalityTableScan(int key) {
+    // loop over all the records in all the files
+    double num_files = 0;
+    for (String record : this) {
+      num_files++;
+      int randomV = Integer.parseInt(record.substring(33, 37));
+      if (randomV != key) {
+        System.out.println(record);
+      }
+    }
+    System.out.println("Used full table scan");
+    System.out.println("Number of files read: " + (int) Math.ceil(num_files / 100));
+  }
 }
