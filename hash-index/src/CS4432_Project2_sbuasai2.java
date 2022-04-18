@@ -13,6 +13,7 @@ public class CS4432_Project2_sbuasai2 {
 
     while (active) {
       // clean input and set to upper case for standardized strings
+      System.out.print(">");
       String input = reader.readLine().toUpperCase();
 
       // input parsing
