@@ -52,13 +52,12 @@ public class ArrayIndex {
    */
   // Prints records with randomV value in given range
   public void readRange(int m, int n){
+    // cap the maximum range to 5000 and the minimum range to 0
+    n = n > 5000 ? 5000 : n;
+    m = m < 0 ? 0 : m;
     // Check if the given range is valid or not
-    if (m < 0 || n < 0 || m > 5000) {
+    if (n < 0 || m > 5000 || m > n) {
       System.err.println("Given range is invalid.");
-    }
-    // cap the maximum range to 5000
-    if (n > 5000) {
-      n = 5000;
     }
     // initialize the file_record
     String output = "";
