@@ -6,7 +6,7 @@ public class ArrayIndex {
    * Constructor ------------------------------------------
    */
   public ArrayIndex() {
-    array = new String[5000];
+    this.array = new String[5000];
   }
 
   /*
@@ -19,12 +19,12 @@ public class ArrayIndex {
     // calculate appropriate 0-indexed array
     randomV -= 1;
     // if the given randomV does not exist, add the new record
-    if (array[randomV] == null) {
-      array[randomV] = record_loc;
+    if (this.array[randomV] == null) {
+      this.array[randomV] = record_loc;
     }
     // otherwise, append the new record to the existing array
     else {
-      String curr_idx = array[randomV];
+      String curr_idx = this.array[randomV];
       // if the current value already has the file_id, append only the record_id
       if (curr_idx.contains(record_loc.substring(0, 3))) {
         // find the index of the file that the current record is inserting to
@@ -34,11 +34,11 @@ public class ArrayIndex {
         String original_data = curr_idx.substring(0, file_idx + 3);
         String curr_record = record_loc.substring(3);
         String original_record = curr_idx.substring(file_idx + 3);
-        array[randomV] = original_data + curr_record + "," + original_record;
+        this.array[randomV] = original_data + curr_record + "," + original_record;
       }
       // otherwise, append the both file_id and record_id
       else {
-        array[randomV] = array[randomV] + ";" + record_loc;
+        this.array[randomV] = this.array[randomV] + ";" + record_loc;
       }
     }
   }
@@ -62,9 +62,9 @@ public class ArrayIndex {
     String output = "";
     // loop through the data file within the given range
     for (int i = m; i < n - 1; i++) {
-      if (array[i] != null) {
+      if (this.array[i] != null) {
         // split the files according to the given semi-colon
-        String[] files = array[i].split(";");
+        String[] files = this.array[i].split(";");
         // loop over the values in each file
         for (String f : files) {
           // if the file is already in output, append the record to the output
