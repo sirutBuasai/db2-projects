@@ -224,11 +224,7 @@ public class CS4432_Project3_sbuasai2 {
     int bucketValue = hash(key);
 
     // if the bucket is empty, initialize it
-    if (tableA.get(bucketValue) == null) {
-      tableA.set(bucketValue, new LinkedList<>());
-      System.out.println(bucketValue);
-      System.out.println("MOOOOOO MFK");
-    }
+    if (tableA.get(bucketValue) == null)  tableA.set(bucketValue, new LinkedList<>());
 
     // add value to bucket
     tableA.get(bucketValue).add(value);
