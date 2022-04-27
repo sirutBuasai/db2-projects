@@ -154,7 +154,7 @@ public class Database {
    * Argument: void
    * Return: void
    */
-  public void constructArray() {
+  public void buildArray() {
     try {
       // loop over all files in dataset
       for (int i = 0; i < NUMFILE; i++) {

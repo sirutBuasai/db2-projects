@@ -28,7 +28,7 @@ public class Main {
           break;
 
         case "SELECT COUNT(*) FROM A, B WHERE A.RANDOMV > B.RANDOMV":
-          db.constructArray();
+          db.buildArray();
           db.countStar();
           break;
 
