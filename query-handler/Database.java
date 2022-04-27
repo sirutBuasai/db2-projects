@@ -18,7 +18,7 @@ public class Database {
    * Constructor ------------------------------------------
    */
   public Database() {
-    this.hash_table = new ArrayList<LinkedList<String>>(Collections.nCopies(NUMBUCKET, new LinkedList<String>()));
+    this.hash_table = new ArrayList<LinkedList<String>>();
     this.data_array = new String[NUMFILE*NUMRECORD];
   }
 
@@ -191,7 +191,7 @@ public class Database {
       // loop over all files in dataset
       for (int i = 0; i < NUMFILE; i++) {
         // initialize file name
-        String file_name = "Project3Dataset-A/A" + (i+1) + ".txt";
+        String file_name = "Project3Dataset-B/B" + (i+1) + ".txt";
         // read file content
         Scanner scanner = new Scanner(new File(file_name));
         String file_content = scanner.nextLine();
