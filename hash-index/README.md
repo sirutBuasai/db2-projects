@@ -1,4 +1,4 @@
-# CS 4432 Project 1
+# CS 4432 Project 2
 ### Sirut Buasai
 ### sbuasai2@wpi.edu
 ### Student id: 898424678
