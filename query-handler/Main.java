@@ -25,47 +25,11 @@ public class Main {
         case "SELECT A.COL1, A.COL2, B.COL1, B.COL2 FROM A, B WHERE A.RANDOMV = B.RANDOMV":
           db.buildTable();
           db.joinTable();
-          // construct hash table
-          // constructHashTable();
-          // join tables
-          // joinTables();
           break;
 
         case "SELECT COUNT(*) FROM A, B WHERE A.RANDOMV > B.RANDOMV":
           db.constructArray();
           db.countStar();
-          break;
-
-        case "SELECTCOL2,SUM(RANDOMV)FROMAGROUPBYCOL2":
-          // make hash table using names values
-          // constructNamesHashTable("A");
-          // aggreagte (sum)
-          // aggregate(1);
-
-          break;
-
-        case "SELECTCOL2,SUM(RANDOMV)FROMBGROUPBYCOL2":
-          // make hash table using names values
-          // constructNamesHashTable("B");
-          // aggregate (sum)
-          // aggregate(1);
-
-          break;
-
-        case "SELECTCOL2,AVG(RANDOMV)FROMAGROUPBYCOL2":
-          // make hash table using names values
-          // constructNamesHashTable("A");
-          // aggregate (avg)
-          // aggregate(2);
-
-          break;
-
-        case "SELECTCOL2,AVG(RANDOMV)FROMBGROUPBYCOL2":
-          // make hash table using names values
-          // constructNamesHashTable("B");
-          // aggregate (avg)
-          // aggregate(2);
-
           break;
 
         case "EXIT":
