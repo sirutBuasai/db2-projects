@@ -12,14 +12,14 @@ public class Database {
 
   // Class attributes
   private ArrayList<LinkedList<String>> hash_table;
-  private String[] file_data;
+  private String[] data_array;
 
   /*
    * Constructor ------------------------------------------
    */
   public Database() {
     this.hash_table = new ArrayList<LinkedList<String>>(Collections.nCopies(NUMBUCKET, new LinkedList<String>()));
-    this.file_data = new String[NUMFILE*NUMRECORD];
+    this.data_array = new String[NUMFILE*NUMRECORD];
   }
 
   /*
@@ -114,10 +114,9 @@ public class Database {
    */
   public void joinTable() {
     // print column fields
-    int someint = 0;
     System.out.println("A.Col1   A.Col2      B.Col1   B.Col2");
     try {
-      // loop over files, same thing as constructArray
+      // loop over all files in dataset
       for (int i = 0; i < NUMFILE; i++) {
         // initialize file name
         String file_name = "Project3Dataset-B/B" + (i+1) + ".txt";
@@ -132,23 +131,91 @@ public class Database {
           int randomV_b = getRandomV(record_b);
           // get bucket_num from randomV
           int search_bucket = hashFunc(randomV_b);
-          // loop over records in tableA hash table
+          // loop over records in relation A hash table
           for (String record_a : this.hash_table.get(search_bucket)) {
             int randomV_a = getRandomV(record_a);
             if (randomV_a == randomV_b) {
-              someint++;
               String[] colsA = record_a.split(", ");
               String[] colsB = record_b.split(", ");
               // print output
               System.out.println(colsA[0] + "   " + colsA[1] + "      " + colsB[0] + "   " + colsB[1]);
             }
           }
-
         }
       }
     } catch (FileNotFoundException e) {
       System.out.println("File not found!");
     }
-    System.out.println(someint);
+  }
+
+  /*
+   * ------------------------------------------------------
+   * Loops over relation A and store it in memory
+   * Argument: void
+   * Return: void
+   */
+  public void constructArray() {
+    try {
+      // loop over all files in dataset
+      for (int i = 0; i < NUMFILE; i++) {
+        // initialize file name
+        String file_name = "Project3Dataset-A/A" + (i+1) + ".txt";
+        // read file content
+        Scanner scanner = new Scanner(new File(file_name));
+        String file_content = scanner.nextLine();
+        scanner.close();
+        // loop over all records in the current file
+        for (int j = 0; j < NUMRECORD; j++) {
+          // retrieve record content and its randomV
+          String curr_record = getRecord(file_content, j);
+          int rr_num = (i*100)+j;
+          // store record content in memory
+          this.data_array[rr_num] = curr_record;
+        }
+      }
+    } catch (FileNotFoundException e) {
+      System.err.println("Error: Cannot find file");
+    }
+  }
+
+  /*
+   * ------------------------------------------------------
+   * Count the number of tuples with the given condition A.randomV > B.randomV
+   * Argument: void
+   * Return: void
+   */
+  public void countStar() {
+    // initialize total count variable
+    int count = 0;
+    try {
+      // loop over all files in dataset
+      for (int i = 0; i < NUMFILE; i++) {
+        // initialize file name
+        String file_name = "Project3Dataset-A/A" + (i+1) + ".txt";
+        // read file content
+        Scanner scanner = new Scanner(new File(file_name));
+        String file_content = scanner.nextLine();
+        scanner.close();
+        // loop over all records in the current file
+        for (int j = 0; j < NUMRECORD; j++) {
+          // retrieve record content and its randomV
+          String record_b = getRecord(file_content, j);
+          int randomV_b = getRandomV(record_b);
+          // loop over data in relation A stored in memory
+          for (int k = 0; k < this.data_array.length; k++) {
+            String record_a = this.data_array[k];
+            int recordV_a = getRandomV(record_a);
+            // increment the total count given the condition A.randomV > B.randomV
+            if (recordV_a > randomV_b) {
+              count++;
+            }
+          }
+        }
+      }
+      // print output
+      System.out.println("Count: " + count);
+    } catch (FileNotFoundException e) {
+      System.out.println("File not found!");
+    }
   }
 }

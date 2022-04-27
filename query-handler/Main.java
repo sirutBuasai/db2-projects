@@ -32,15 +32,8 @@ public class Main {
           break;
 
         case "SELECT COUNT(*) FROM A, B WHERE A.RANDOMV > B.RANDOMV":
-          System.out.println("2");
-          // construct array
-          // constructArray();
-          // select count
-          // selectCount();
-
-          // Manual check: count seems reasonable considering the largest possible
-          // join would be 9900^2 entries
-
+          db.constructArray();
+          db.countStar();
           break;
 
         case "SELECTCOL2,SUM(RANDOMV)FROMAGROUPBYCOL2":
