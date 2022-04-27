@@ -168,7 +168,7 @@ public class Database {
         for (int j = 0; j < NUMRECORD; j++) {
           // retrieve record content and its randomV
           String curr_record = getRecord(file_content, j);
-          int rr_num = (i*100)+j;
+          int rr_num = (i*NUMRECORD)+j;
           // store record content in memory
           this.data_array[rr_num] = curr_record;
         }
