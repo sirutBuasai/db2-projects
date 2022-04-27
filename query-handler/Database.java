@@ -114,7 +114,7 @@ public class Database {
    */
   public void joinTable() {
     // print column fields
-    System.out.println("A.Col1   A.Col2      B.Col1   B.Col2");
+    System.out.println("A.Col1       A.Col2       B.Col1       B.Col2");
     try {
       // loop over all files in dataset
       for (int i = 0; i < NUMFILE; i++) {
