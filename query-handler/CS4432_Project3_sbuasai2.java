@@ -53,7 +53,6 @@ public class CS4432_Project3_sbuasai2 {
           System.err.println("                EXIT");
           System.out.println("-----------------------------------");
           break;
-
       }
       // calculate and print total time in ms
       long total = TimeUnit.MILLISECONDS.convert(System.nanoTime() - start, TimeUnit.NANOSECONDS);
